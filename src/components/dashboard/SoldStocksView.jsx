@@ -14,7 +14,7 @@ export function SoldStocksView({ monthLabel }) {
   const itemsPerPage = 10;
 
   useEffect(() => {
-    const url = SELLS_CSV_URL && SELLS_CSV_URL.length > 0 ? SELLS_CSV_URL : '/Stock_Sell_Nov-25.csv';
+    const url = SELLS_CSV_URL && SELLS_CSV_URL.length > 0 ? SELLS_CSV_URL : 'Stock_Sell_Nov-25.csv';
     fetchCsv(url)
       .then(data => {
         setRows(Array.isArray(data) ? data : []);

@@ -127,7 +127,7 @@ function App() {
   });
 
   useEffect(() => {
-    const url = DATA_CSV_URL && DATA_CSV_URL.length > 0 ? DATA_CSV_URL : '/data.csv';
+    const url = DATA_CSV_URL && DATA_CSV_URL.length > 0 ? DATA_CSV_URL : 'data.csv';
     fetchCsv(url)
       .then(rows => {
         setData(rows);

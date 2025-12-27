@@ -14,7 +14,7 @@ export function FavoriteStocksView({ monthLabel }) {
   const itemsPerPage = 10;
 
   useEffect(() => {
-    const url = FAVORITES_CSV_URL && FAVORITES_CSV_URL.length > 0 ? FAVORITES_CSV_URL : '/favorites.csv';
+    const url = FAVORITES_CSV_URL && FAVORITES_CSV_URL.length > 0 ? FAVORITES_CSV_URL : 'Stock_Buy_Nov-25 (1).csv';
     fetchCsv(url)
       .then(data => {
         setRows(Array.isArray(data) ? data : []);
