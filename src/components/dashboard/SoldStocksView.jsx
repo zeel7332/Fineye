@@ -99,66 +99,66 @@ export function SoldStocksView({ monthLabel }) {
 
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         {!!monthLabelMemo && (
-          <div className="px-6 py-2 text-xs text-slate-600 border-b border-slate-200">
+          <div className="px-4 sm:px-6 py-2 text-[10px] sm:text-xs text-slate-600 border-b border-slate-200">
             Data for: {monthLabelMemo}
           </div>
         )}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-600">
+        <div className="overflow-x-auto scrollbar-hide">
+          <table className="w-full text-left text-xs sm:text-sm text-slate-600">
             <thead className="bg-slate-50 text-slate-900 font-semibold border-b border-slate-200">
               <tr>
-                <th className="px-6 py-4">Stock Name</th>
-                <th className="px-6 py-4">Sector</th>
-                <th className="px-6 py-4">Classification</th>
-                <th className="px-6 py-4">Month</th>
-                <th className="px-6 py-4 text-right">Net Qty Sold</th>
-                <th className="px-6 py-4 text-right">Approx. Sell Value (Rs cr)</th>
+                <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Stock Name</th>
+                <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Sector</th>
+                <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Classification</th>
+                <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Month</th>
+                <th className="px-4 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap">Net Qty Sold</th>
+                <th className="px-4 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap">Approx. Sell Value (Rs cr)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {paginated.length > 0 ? (
                 paginated.map((row, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/50">
-                    <td className="px-6 py-4 font-medium text-slate-900">
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 font-medium text-slate-900 whitespace-nowrap">
                       <span className="inline-flex items-center gap-2">
-                        <span className="p-1.5 bg-red-50 text-red-600 rounded-md">
-                          <TrendingDown className="w-4 h-4" />
+                        <span className="p-1 sm:p-1.5 bg-red-50 text-red-600 rounded-md">
+                          <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4" />
                         </span>
                         {row.stock_name}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{row.sector || '—'}</td>
-                    <td className="px-6 py-4">{row.classification || '—'}</td>
-                    <td className="px-6 py-4">{row.month || '—'}</td>
-                    <td className="px-6 py-4 text-right">{row.net_qty_sold?.toLocaleString() ?? '—'}</td>
-                    <td className="px-6 py-4 text-right">{row.approx_sell_value_cr != null ? row.approx_sell_value_cr.toLocaleString() : '—'}</td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{row.sector || '—'}</td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{row.classification || '—'}</td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{row.month || '—'}</td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap font-mono">{row.net_qty_sold?.toLocaleString() ?? '—'}</td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap font-mono font-semibold text-slate-900">{row.approx_sell_value_cr != null ? row.approx_sell_value_cr.toLocaleString() : '—'}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-slate-500">No sold stocks found</td>
+                  <td colSpan={6} className="px-4 sm:px-6 py-8 text-center text-slate-500">No sold stocks found</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
 
-        <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1 rounded border border-slate-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+            className="px-2 sm:px-3 py-1 rounded border border-slate-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 text-xs sm:text-sm"
           >
-            Previous
+            Prev
           </button>
-          <div className="flex gap-1">
+          <div className="flex gap-1 overflow-x-auto max-w-[120px] sm:max-w-none scrollbar-hide">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
               <button
                 key={n}
                 onClick={() => setPage(n)}
                 className={cn(
                   n === page ? "bg-primary text-white border-primary" : "bg-white text-slate-700 hover:bg-slate-50 border-slate-300",
-                  "px-3 py-1 rounded border text-sm"
+                  "px-2 sm:px-3 py-1 rounded border text-[10px] sm:text-sm flex-shrink-0"
                 )}
               >
                 {n}
@@ -168,7 +168,7 @@ export function SoldStocksView({ monthLabel }) {
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1 rounded border border-slate-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+            className="px-2 sm:px-3 py-1 rounded border border-slate-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 text-xs sm:text-sm"
           >
             Next
           </button>
