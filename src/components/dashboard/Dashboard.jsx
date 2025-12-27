@@ -1,0 +1,168 @@
+import React, { useState } from 'react';
+import { Search, Filter, TrendingUp, BarChart2 } from 'lucide-react';
+
+export function Dashboard({ data }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sectorFilter, setSectorFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Identify columns dynamically
+  const columns = data.length > 0 ? Object.keys(data[0]) : [];
+  const stockCol = columns.find(c => c.toLowerCase().includes('stock') || c.toLowerCase().includes('company')) || columns[0];
+  const fundCol = columns.find(c => c.toLowerCase().includes('fund') || c.toLowerCase().includes('scheme'));
+  const sectorCol = columns.find(c => c.toLowerCase().includes('sector'));
+  const categoryCol = columns.find(c => c.toLowerCase().includes('category') || c.toLowerCase().includes('cap'));
+
+  // Get unique values for filters
+  const sectors = sectorCol ? [...new Set(data.map(item => item[sectorCol]).filter(Boolean))].sort() : [];
+
+  const categories = categoryCol ? [...new Set(data.map(item => item[categoryCol]).filter(Boolean))].sort() : [];
+
+  // Filter data
+  const filteredData = data.filter(item => {
+    const matchesSearch = searchTerm === '' || 
+      Object.values(item).some(val => 
+        String(val).toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    const matchesSector = sectorFilter === '' || item[sectorCol] === sectorFilter;
+    const matchesCategory = categoryFilter === '' || item[categoryCol] === categoryFilter;
+    
+    return matchesSearch && matchesSector && matchesCategory;
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+  // Stats
+  const totalStocks = stockCol ? new Set(filteredData.map(item => item[stockCol])).size : 0;
+  const totalFunds = fundCol ? new Set(filteredData.map(item => item[fundCol])).size : 0;
+
+  return (
+    <div className="space-y-6">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <div className="flex items-center space-x-3 mb-2">
+            <div className="bg-blue-100 p-2 rounded-lg">
+              <BarChart2 className="w-5 h-5 text-primary" />
+            </div>
+            <h3 className="font-semibold text-slate-700">Total Records</h3>
+          </div>
+          <p className="text-3xl font-bold text-slate-900">{filteredData.length.toLocaleString()}</p>
+        </div>
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+           <div className="flex items-center space-x-3 mb-2">
+            <div className="bg-green-100 p-2 rounded-lg">
+              <TrendingUp className="w-5 h-5 text-green-700" />
+            </div>
+            <h3 className="font-semibold text-slate-700">Unique Stocks</h3>
+          </div>
+          <p className="text-3xl font-bold text-slate-900">{totalStocks}</p>
+        </div>
+         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+           <div className="flex items-center space-x-3 mb-2">
+            <div className="bg-purple-100 p-2 rounded-lg">
+              <Filter className="w-5 h-5 text-purple-700" />
+            </div>
+            <h3 className="font-semibold text-slate-700">Mutual Funds</h3>
+          </div>
+          <p className="text-3xl font-bold text-slate-900">{totalFunds}</p>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <input 
+            type="text" 
+            placeholder="Search stock, fund, or any keyword..." 
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            value={searchTerm}
+            onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+          />
+        </div>
+        <div className="flex gap-2">
+           {sectors.length > 0 && (
+             <select 
+               className="px-4 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary max-w-[200px]"
+               value={sectorFilter}
+               onChange={(e) => { setSectorFilter(e.target.value); setPage(1); }}
+             >
+              <option value="">All Sectors</option>
+              {sectors.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+           )}
+           {categories.length > 0 && (
+             <select 
+               className="px-4 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary max-w-[200px]"
+               value={categoryFilter}
+               onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
+             >
+              <option value="">All Categories</option>
+              {categories.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+           )}
+        </div>
+      </div>
+
+      {/* Data Table Preview */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm text-slate-600">
+            <thead className="bg-slate-50 text-slate-900 font-semibold border-b border-slate-200">
+              <tr>
+                {columns.slice(0, 8).map((key) => (
+                  <th key={key} className="px-6 py-4 capitalize whitespace-nowrap">{key.replace(/_/g, ' ')}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {paginatedData.length > 0 ? (
+                paginatedData.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/50">
+                     {columns.slice(0, 8).map((key, i) => (
+                      <td key={i} className="px-6 py-4 whitespace-nowrap max-w-xs truncate" title={row[key]}>{row[key]}</td>
+                     ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={columns.length} className="px-6 py-8 text-center text-slate-500">
+                    No results found matching your criteria.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+            <button 
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1 rounded border border-slate-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-slate-600">
+              Page {page} of {totalPages}
+            </span>
+            <button 
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-3 py-1 rounded border border-slate-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
