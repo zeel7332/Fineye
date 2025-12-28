@@ -47,7 +47,10 @@ export async function fetchCsv(url) {
                 const percent_aum_raw =
                   (r.percent_aum ?? r["Percent AUM"] ?? r["percent aum"] ?? "").toString().trim();
                 const percent_aum = parseFloat(percent_aum_raw) || null;
-                const sector = (r.sector ?? r["Sector"] ?? "").trim();
+                const sector = (r.sector ?? r["Sector"] ?? r["sector"] ?? "").trim();
+                const company_name = (r.company_name ?? r["company_name"] ?? "").trim();
+                const ticker = (r.ticker ?? r["ticker"] ?? "").trim();
+                
                 const net_qty_bought_raw = (r.net_qty_bought ?? r["Net Qty Bought"] ?? "").toString().trim();
                 const approx_buy_value_raw =
                   (r.approx_buy_value_cr ?? r["Approx. Buy Value(In Rs. cr) *"] ?? "").toString().trim();
@@ -70,6 +73,8 @@ export async function fetchCsv(url) {
                   stock_name,
                   percent_aum,
                   sector,
+                  company_name,
+                  ticker,
                   net_qty_bought,
                   approx_buy_value_cr,
                   net_qty_sold,

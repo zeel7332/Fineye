@@ -31,7 +31,8 @@ export function FavoriteStocksView({ monthLabel }) {
   const normalized = useMemo(() => {
     return rows
       .map(r => ({
-        stock_name: (r.stock_name || '').trim(),
+        stock_name: (r.company_name || r.stock_name || '').trim(),
+        ticker: (r.ticker || '').trim(),
         sector: (r.sector || '').trim(),
         classification: (r.classification || '').trim(),
         month: (r.month || '').trim(),
@@ -47,7 +48,10 @@ export function FavoriteStocksView({ monthLabel }) {
 
   const filtered = useMemo(() => {
     const bySearch = searchTerm
-      ? normalized.filter(r => r.stock_name.toLowerCase().includes(searchTerm.toLowerCase()))
+      ? normalized.filter(r => 
+          r.stock_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          r.ticker.toLowerCase().includes(searchTerm.toLowerCase())
+        )
       : normalized;
     const byClass = classificationFilter
       ? bySearch.filter(r => r.classification === classificationFilter)
@@ -108,6 +112,7 @@ export function FavoriteStocksView({ monthLabel }) {
             <thead className="bg-slate-50 text-slate-900 font-semibold border-b border-slate-200">
               <tr>
                 <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Stock Name</th>
+                <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-center">Ticker</th>
                 <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Sector</th>
                 <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Classification</th>
                 <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Month</th>
@@ -125,6 +130,11 @@ export function FavoriteStocksView({ monthLabel }) {
                           <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
                         </span>
                         {row.stock_name}
+                      </span>
+                    </td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-center">
+                      <span className="text-[10px] sm:text-xs font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                        {row.ticker || 'N/A'}
                       </span>
                     </td>
                     <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{row.sector || '—'}</td>

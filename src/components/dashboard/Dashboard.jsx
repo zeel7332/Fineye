@@ -16,18 +16,22 @@ export function Dashboard({ data }) {
   const categoryCol = columns.find(c => c.toLowerCase().includes('category') || c.toLowerCase().includes('cap'));
 
   // Get unique values for filters
-  const sectors = sectorCol ? [...new Set(data.map(item => item[sectorCol]).filter(Boolean))].sort() : [];
-
-  const categories = categoryCol ? [...new Set(data.map(item => item[categoryCol]).filter(Boolean))].sort() : [];
+  const sectors = [...new Set(data.map(item => item.sector).filter(Boolean))].sort();
+  const categories = [...new Set(data.map(item => item.classification).filter(Boolean))].sort();
 
   // Filter data
   const filteredData = data.filter(item => {
+    const stockName = item.company_name || item.stock_name || '';
+    const ticker = item.ticker || '';
+    
     const matchesSearch = searchTerm === '' || 
+      stockName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ticker.toLowerCase().includes(searchTerm.toLowerCase()) ||
       Object.values(item).some(val => 
         String(val).toLowerCase().includes(searchTerm.toLowerCase())
       );
-    const matchesSector = sectorFilter === '' || item[sectorCol] === sectorFilter;
-    const matchesCategory = categoryFilter === '' || item[categoryCol] === categoryFilter;
+    const matchesSector = sectorFilter === '' || item.sector === sectorFilter;
+    const matchesCategory = categoryFilter === '' || item.classification === categoryFilter;
     
     return matchesSearch && matchesSector && matchesCategory;
   });
@@ -37,8 +41,8 @@ export function Dashboard({ data }) {
   const paginatedData = filteredData.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   // Stats
-  const totalStocks = stockCol ? new Set(filteredData.map(item => item[stockCol])).size : 0;
-  const totalFunds = fundCol ? new Set(filteredData.map(item => item[fundCol])).size : 0;
+  const totalStocks = new Set(filteredData.map(item => item.company_name || item.stock_name)).size;
+  const totalFunds = new Set(filteredData.map(item => item.fund_name)).size;
 
   return (
     <div className="space-y-6">
