@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
-import { Search, Filter, TrendingUp, BarChart2 } from 'lucide-react';
+import { Search, Filter, TrendingUp, BarChart2, ChevronDown, Filter as FilterIcon } from 'lucide-react';
 
 export function Dashboard({ data }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [sectorFilter, setSectorFilter] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [selectedSectors, setSelectedSectors] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [showSectorMenu, setShowSectorMenu] = useState(false);
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
 
   // Identify columns dynamically
   const columns = data.length > 0 ? Object.keys(data[0]) : [];
-  const stockCol = columns.find(c => c.toLowerCase().includes('stock') || c.toLowerCase().includes('company')) || columns[0];
-  const fundCol = columns.find(c => c.toLowerCase().includes('fund') || c.toLowerCase().includes('scheme'));
-  const sectorCol = columns.find(c => c.toLowerCase().includes('sector'));
-  const categoryCol = columns.find(c => c.toLowerCase().includes('category') || c.toLowerCase().includes('cap'));
-
+  
   // Get unique values for filters
   const sectors = [...new Set(data.map(item => item.sector).filter(Boolean))].sort();
   const categories = [...new Set(data.map(item => item.classification).filter(Boolean))].sort();
@@ -30,8 +28,8 @@ export function Dashboard({ data }) {
       Object.values(item).some(val => 
         String(val).toLowerCase().includes(searchTerm.toLowerCase())
       );
-    const matchesSector = sectorFilter === '' || item.sector === sectorFilter;
-    const matchesCategory = categoryFilter === '' || item.classification === categoryFilter;
+    const matchesSector = selectedSectors.length === 0 || selectedSectors.includes(item.sector);
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(item.classification);
     
     return matchesSearch && matchesSector && matchesCategory;
   });
@@ -78,7 +76,7 @@ export function Dashboard({ data }) {
       </div>
 
       {/* Controls */}
-      <div className="flex flex-col md:flex-row gap-3 sm:gap-4 px-1 sm:px-0">
+      <div className="flex flex-col gap-4 px-1 sm:px-0">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
           <input 
@@ -89,27 +87,153 @@ export function Dashboard({ data }) {
             onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
           />
         </div>
-        <div className="flex gap-2">
-           {sectors.length > 0 && (
-             <select 
-               className="flex-1 md:flex-none px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-slate-300 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs sm:text-sm max-w-none md:max-w-[200px]"
-               value={sectorFilter}
-               onChange={(e) => { setSectorFilter(e.target.value); setPage(1); }}
-             >
-              <option value="">All Sectors</option>
-              {sectors.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-           )}
-           {categories.length > 0 && (
-             <select 
-               className="flex-1 md:flex-none px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-slate-300 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-xs sm:text-sm max-w-none md:max-w-[200px]"
-               value={categoryFilter}
-               onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
-             >
-              <option value="">All Categories</option>
-              {categories.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-           )}
+
+        <div className="relative">
+          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-4">
+            {/* Fund Category Filter */}
+            <div className="flex flex-col gap-1.5">
+              <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider ml-0.5">
+                <FilterIcon className="w-3 h-3" />
+                Fund Category
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setShowCategoryMenu(v => !v);
+                    setShowSectorMenu(false);
+                  }}
+                  className={`flex-1 sm:flex-none inline-flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-xs sm:text-sm transition-all shadow-sm ${
+                    showCategoryMenu || selectedCategories.length > 0 
+                      ? 'border-primary bg-primary/5 text-primary ring-2 ring-primary/10' 
+                      : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'
+                  }`}
+                >
+                  <span className="truncate">
+                    {selectedCategories.length === 0 ? "All Categories" : `${selectedCategories.length} selected`}
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showCategoryMenu ? 'rotate-180' : ''}`} />
+                </button>
+                {selectedCategories.length > 0 && (
+                  <button 
+                    onClick={() => { setSelectedCategories([]); setPage(1); }}
+                    className="p-2 text-slate-400 hover:text-primary transition-colors"
+                  >
+                    <span className="text-xs font-medium">Clear</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="hidden sm:block h-8 w-px bg-slate-200 mx-1" />
+
+            {/* Sector Filter */}
+            <div className="flex flex-col gap-1.5">
+              <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider ml-0.5">
+                <FilterIcon className="w-3 h-3" />
+                Sector
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setShowSectorMenu(v => !v);
+                    setShowCategoryMenu(false);
+                  }}
+                  className={`flex-1 sm:flex-none inline-flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-xs sm:text-sm transition-all shadow-sm ${
+                    showSectorMenu || selectedSectors.length > 0 
+                      ? 'border-primary bg-primary/5 text-primary ring-2 ring-primary/10' 
+                      : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'
+                  }`}
+                >
+                  <span className="truncate">
+                    {selectedSectors.length === 0 ? "All Sectors" : `${selectedSectors.length} selected`}
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showSectorMenu ? 'rotate-180' : ''}`} />
+                </button>
+                {selectedSectors.length > 0 && (
+                  <button 
+                    onClick={() => { setSelectedSectors([]); setPage(1); }}
+                    className="p-2 text-slate-400 hover:text-primary transition-colors"
+                  >
+                    <span className="text-xs font-medium">Clear</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Category Dropdown */}
+          {showCategoryMenu && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowCategoryMenu(false)} />
+              <div className="absolute left-0 top-full mt-2 w-full sm:w-64 bg-white rounded-xl border border-slate-200 shadow-2xl z-20 py-2 max-h-[350px] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 origin-top">
+                <div className="px-4 py-2 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white z-10">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Select Categories</span>
+                  {selectedCategories.length > 0 && (
+                    <button 
+                      onClick={() => setSelectedCategories([])}
+                      className="text-[10px] text-primary hover:underline font-bold"
+                    >
+                      RESET
+                    </button>
+                  )}
+                </div>
+                <div className="mt-1">
+                  {categories.map(cat => (
+                    <label key={cat} className="flex items-center px-4 py-2.5 hover:bg-slate-50 cursor-pointer group transition-colors">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/20 transition-all cursor-pointer"
+                        checked={selectedCategories.includes(cat)}
+                        onChange={(e) => {
+                          if (e.target.checked) setSelectedCategories([...selectedCategories, cat]);
+                          else setSelectedCategories(selectedCategories.filter(c => c !== cat));
+                          setPage(1);
+                        }}
+                      />
+                      <span className="ml-3 text-sm text-slate-600 group-hover:text-slate-900 font-medium transition-colors">{cat}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Sector Dropdown */}
+          {showSectorMenu && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowSectorMenu(false)} />
+              <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-full sm:w-64 bg-white rounded-xl border border-slate-200 shadow-2xl z-20 py-2 max-h-[350px] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 origin-top">
+                <div className="px-4 py-2 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white z-10">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Select Sectors</span>
+                  {selectedSectors.length > 0 && (
+                    <button 
+                      onClick={() => setSelectedSectors([])}
+                      className="text-[10px] text-primary hover:underline font-bold"
+                    >
+                      RESET
+                    </button>
+                  )}
+                </div>
+                <div className="mt-1">
+                  {sectors.map(sec => (
+                    <label key={sec} className="flex items-center px-4 py-2.5 hover:bg-slate-50 cursor-pointer group transition-colors">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/20 transition-all cursor-pointer"
+                        checked={selectedSectors.includes(sec)}
+                        onChange={(e) => {
+                          if (e.target.checked) setSelectedSectors([...selectedSectors, sec]);
+                          else setSelectedSectors(selectedSectors.filter(s => s !== sec));
+                          setPage(1);
+                        }}
+                      />
+                      <span className="ml-3 text-sm text-slate-600 group-hover:text-slate-900 font-medium transition-colors">{sec}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

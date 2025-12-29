@@ -101,83 +101,115 @@ export function SmartMoneyView({ data, onOpenFundsPage, monthLabel }) {
         />
       </div>
       <div className="relative px-1 sm:px-0">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-700">
-            <FilterIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
-            Fund Category
-          </span>
-          <button
-            onClick={() => setShowCategoryMenu(v => !v)}
-            aria-haspopup="menu"
-            aria-expanded={showCategoryMenu ? 'true' : 'false'}
-            className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-md border text-xs sm:text-sm transition-colors ${showCategoryMenu ? 'border-primary bg-primary/5 text-slate-800' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'} shadow-sm`}
-            title="Filter by fund category"
-          >
-            <span className="truncate max-w-[100px] sm:max-w-none">
-              {selectedCategories.length === 0 ? "All Categories" : `${selectedCategories.length} selected`}
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-4">
+          {/* Fund Category Filter */}
+          <div className="flex flex-col gap-1.5">
+            <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider ml-0.5">
+              <FilterIcon className="w-3 h-3" />
+              Fund Category
             </span>
-            <ChevronDown className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${showCategoryMenu ? 'rotate-180' : ''} transition-transform text-slate-500`} />
-          </button>
-          {selectedCategories.length > 0 && (
-            <button 
-              onClick={() => { setSelectedCategories([]); setPage(1); }}
-              className="text-[10px] sm:text-xs text-primary hover:underline font-medium"
-            >
-              Clear
-            </button>
-          )}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setShowCategoryMenu(v => !v);
+                  setShowSectorMenu(false);
+                }}
+                className={`flex-1 sm:flex-none inline-flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-xs sm:text-sm transition-all shadow-sm ${
+                  showCategoryMenu || selectedCategories.length > 0 
+                    ? 'border-primary bg-primary/5 text-primary ring-2 ring-primary/10' 
+                    : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'
+                }`}
+              >
+                <span className="truncate">
+                  {selectedCategories.length === 0 ? "All Categories" : `${selectedCategories.length} selected`}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showCategoryMenu ? 'rotate-180' : ''}`} />
+              </button>
+              {selectedCategories.length > 0 && (
+                <button 
+                  onClick={() => { setSelectedCategories([]); setPage(1); }}
+                  className="p-2 text-slate-400 hover:text-primary transition-colors"
+                  title="Clear Category Filter"
+                >
+                  <span className="text-xs font-medium">Clear</span>
+                </button>
+              )}
+            </div>
+          </div>
 
-          <div className="h-4 w-px bg-slate-200 mx-1 hidden sm:block" />
+          <div className="hidden sm:block h-8 w-px bg-slate-200 mx-1" />
 
-          <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-700 ml-2">
-            <FilterIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
-            Sector
-          </span>
-          <button
-            onClick={() => setShowSectorMenu(v => !v)}
-            aria-haspopup="menu"
-            aria-expanded={showSectorMenu ? 'true' : 'false'}
-            className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-md border text-xs sm:text-sm transition-colors ${showSectorMenu ? 'border-primary bg-primary/5 text-slate-800' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'} shadow-sm`}
-            title="Filter by sector"
-          >
-            <span className="truncate max-w-[100px] sm:max-w-none">
-              {selectedSectors.length === 0 ? "All Sectors" : `${selectedSectors.length} selected`}
+          {/* Sector Filter */}
+          <div className="flex flex-col gap-1.5">
+            <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider ml-0.5">
+              <FilterIcon className="w-3 h-3" />
+              Sector
             </span>
-            <ChevronDown className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${showSectorMenu ? 'rotate-180' : ''} transition-transform text-slate-500`} />
-          </button>
-          {selectedSectors.length > 0 && (
-            <button 
-              onClick={() => { setSelectedSectors([]); setPage(1); }}
-              className="text-[10px] sm:text-xs text-primary hover:underline font-medium"
-            >
-              Clear
-            </button>
-          )}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setShowSectorMenu(v => !v);
+                  setShowCategoryMenu(false);
+                }}
+                className={`flex-1 sm:flex-none inline-flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-xs sm:text-sm transition-all shadow-sm ${
+                  showSectorMenu || selectedSectors.length > 0 
+                    ? 'border-primary bg-primary/5 text-primary ring-2 ring-primary/10' 
+                    : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'
+                }`}
+              >
+                <span className="truncate">
+                  {selectedSectors.length === 0 ? "All Sectors" : `${selectedSectors.length} selected`}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showSectorMenu ? 'rotate-180' : ''}`} />
+              </button>
+              {selectedSectors.length > 0 && (
+                <button 
+                  onClick={() => { setSelectedSectors([]); setPage(1); }}
+                  className="p-2 text-slate-400 hover:text-primary transition-colors"
+                  title="Clear Sector Filter"
+                >
+                  <span className="text-xs font-medium">Clear</span>
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Category Dropdown */}
         {showCategoryMenu && (
           <>
             <div className="fixed inset-0 z-10" onClick={() => setShowCategoryMenu(false)} />
-            <div className="absolute left-0 top-full mt-2 w-56 sm:w-64 bg-white rounded-lg border border-slate-200 shadow-xl z-20 py-2 max-h-[300px] overflow-y-auto">
-              <div className="px-3 py-1 mb-1 border-b border-slate-50 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                Select Categories
+            <div className="absolute left-0 top-full mt-2 w-full sm:w-64 bg-white rounded-xl border border-slate-200 shadow-2xl z-20 py-2 max-h-[350px] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 origin-top">
+              <div className="px-4 py-2 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white z-10">
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Select Categories</span>
+                {selectedCategories.length > 0 && (
+                  <button 
+                    onClick={() => setSelectedCategories([])}
+                    className="text-[10px] text-primary hover:underline font-bold"
+                  >
+                    RESET
+                  </button>
+                )}
               </div>
-              {classifications.map(cat => (
-                <label key={cat} className="flex items-center px-4 py-2 hover:bg-slate-50 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/20"
-                    checked={selectedCategories.includes(cat)}
-                    onChange={(e) => {
-                      if (e.target.checked) setSelectedCategories([...selectedCategories, cat]);
-                      else setSelectedCategories(selectedCategories.filter(c => c !== cat));
-                      setPage(1);
-                    }}
-                  />
-                  <span className="ml-3 text-sm text-slate-700 group-hover:text-slate-900">{cat}</span>
-                </label>
-              ))}
+              <div className="mt-1">
+                {classifications.map(cat => (
+                  <label key={cat} className="flex items-center px-4 py-2.5 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <div className="relative flex items-center">
+                      <input
+                        type="checkbox"
+                        className="peer w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/20 transition-all cursor-pointer"
+                        checked={selectedCategories.includes(cat)}
+                        onChange={(e) => {
+                          if (e.target.checked) setSelectedCategories([...selectedCategories, cat]);
+                          else setSelectedCategories(selectedCategories.filter(c => c !== cat));
+                          setPage(1);
+                        }}
+                      />
+                    </div>
+                    <span className="ml-3 text-sm text-slate-600 group-hover:text-slate-900 font-medium transition-colors">{cat}</span>
+                  </label>
+                ))}
+              </div>
             </div>
           </>
         )}
@@ -186,25 +218,37 @@ export function SmartMoneyView({ data, onOpenFundsPage, monthLabel }) {
         {showSectorMenu && (
           <>
             <div className="fixed inset-0 z-10" onClick={() => setShowSectorMenu(false)} />
-            <div className="absolute left-0 sm:left-auto sm:right-0 md:left-48 top-full mt-2 w-56 sm:w-64 bg-white rounded-lg border border-slate-200 shadow-xl z-20 py-2 max-h-[300px] overflow-y-auto">
-              <div className="px-3 py-1 mb-1 border-b border-slate-50 text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                Select Sectors
+            <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-full sm:w-64 bg-white rounded-xl border border-slate-200 shadow-2xl z-20 py-2 max-h-[350px] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 origin-top">
+              <div className="px-4 py-2 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white z-10">
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Select Sectors</span>
+                {selectedSectors.length > 0 && (
+                  <button 
+                    onClick={() => setSelectedSectors([])}
+                    className="text-[10px] text-primary hover:underline font-bold"
+                  >
+                    RESET
+                  </button>
+                )}
               </div>
-              {allSectors.map(sec => (
-                <label key={sec} className="flex items-center px-4 py-2 hover:bg-slate-50 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/20"
-                    checked={selectedSectors.includes(sec)}
-                    onChange={(e) => {
-                      if (e.target.checked) setSelectedSectors([...selectedSectors, sec]);
-                      else setSelectedSectors(selectedSectors.filter(s => s !== sec));
-                      setPage(1);
-                    }}
-                  />
-                  <span className="ml-3 text-sm text-slate-700 group-hover:text-slate-900">{sec}</span>
-                </label>
-              ))}
+              <div className="mt-1">
+                {allSectors.map(sec => (
+                  <label key={sec} className="flex items-center px-4 py-2.5 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <div className="relative flex items-center">
+                      <input
+                        type="checkbox"
+                        className="peer w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/20 transition-all cursor-pointer"
+                        checked={selectedSectors.includes(sec)}
+                        onChange={(e) => {
+                          if (e.target.checked) setSelectedSectors([...selectedSectors, sec]);
+                          else setSelectedSectors(selectedSectors.filter(s => s !== sec));
+                          setPage(1);
+                        }}
+                      />
+                    </div>
+                    <span className="ml-3 text-sm text-slate-600 group-hover:text-slate-900 font-medium transition-colors">{sec}</span>
+                  </label>
+                ))}
+              </div>
             </div>
           </>
         )}
