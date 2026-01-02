@@ -3,10 +3,13 @@ import { Layout } from './components/layout/Layout';
 import { SmartMoneyView } from './components/dashboard/SmartMoneyView';
 import { FavoriteStocksView } from './components/dashboard/FavoriteStocksView';
 import { SoldStocksView } from './components/dashboard/SoldStocksView';
+import { FundCompareView } from './components/dashboard/FundCompareView';
+import { LegalContent } from './components/dashboard/LegalContent';
 import { cn } from './lib/utils';
 import { fetchCsv } from './lib/fetchCsv';
 import { DATA_CSV_URL } from './config';
-import { X } from 'lucide-react';
+import { Logo } from './components/common/Logo';
+import { TrendingUp, Scale, Wallet, Heart, TrendingDown, Info } from 'lucide-react';
 
 function FundsListPage({ stock, classificationFilter, onBack, monthLabel }) {
   const [search, setSearch] = useState('');
@@ -88,24 +91,54 @@ function FundsListPage({ stock, classificationFilter, onBack, monthLabel }) {
             </tbody>
           </table>
         </div>
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={pageSafe === 1}
-            className="px-2 sm:px-3 py-1 rounded border border-slate-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 text-xs sm:text-sm"
-          >
-            Prev
-          </button>
-          <div className="text-[10px] sm:text-sm text-slate-600 font-medium">
-            Page {pageSafe} / {totalPages}
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <div className="text-[10px] sm:text-xs text-slate-500 font-medium order-2 sm:order-1">
+            Showing <span className="text-slate-900">{((pageSafe - 1) * itemsPerPage) + 1}</span> to <span className="text-slate-900">{Math.min(pageSafe * itemsPerPage, rows.length)}</span> of <span className="text-slate-900">{rows.length}</span> results
           </div>
-          <button
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            disabled={pageSafe === totalPages}
-            className="px-2 sm:px-3 py-1 rounded border border-slate-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 text-xs sm:text-sm"
-          >
-            Next
-          </button>
+
+          <div className="flex items-center gap-2 order-1 sm:order-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={pageSafe === 1}
+              className="px-2 sm:px-3 py-1 rounded border border-slate-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 text-xs sm:text-sm transition-all shadow-sm"
+            >
+              Prev
+            </button>
+            
+            <div className="flex gap-1 overflow-x-auto max-w-[120px] sm:max-w-none scrollbar-hide">
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(n => {
+                  if (totalPages <= 5) return true;
+                  if (n === 1 || n === totalPages) return true;
+                  if (Math.abs(n - pageSafe) <= 1) return true;
+                  return false;
+                })
+                .map((n, i, arr) => (
+                  <React.Fragment key={n}>
+                    {i > 0 && arr[i-1] !== n - 1 && (
+                      <span className="px-1 text-slate-400 self-center text-xs">...</span>
+                    )}
+                    <button
+                      onClick={() => setPage(n)}
+                      className={cn(
+                        n === pageSafe ? "bg-primary text-white border-primary shadow-sm" : "bg-white text-slate-700 hover:bg-slate-50 border-slate-300",
+                        "px-2 sm:px-3 py-1 rounded border text-[10px] sm:text-sm flex-shrink-0 transition-all"
+                      )}
+                    >
+                      {n}
+                    </button>
+                  </React.Fragment>
+                ))}
+            </div>
+
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={pageSafe === totalPages}
+              className="px-2 sm:px-3 py-1 rounded border border-slate-300 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 text-xs sm:text-sm transition-all shadow-sm"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -119,12 +152,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [fundsPage, setFundsPage] = useState(null);
-  const [showHero, setShowHero] = useState(() => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      return window.localStorage.getItem('hideHero') === '1' ? false : true;
-    }
-    return true;
-  });
+
 
   useEffect(() => {
     const url = DATA_CSV_URL && DATA_CSV_URL.length > 0 ? DATA_CSV_URL : 'data.csv';
@@ -140,9 +168,9 @@ function App() {
   }, []);
 
   const tabs = [
-    { id: 'smart-money', label: 'Where Smart Money Goes' },
-    { id: 'future-1', label: 'Funds’ Favorite Stocks' },
-    { id: 'future-2', label: 'Top Sold Stocks by Funds' },
+    { id: 'smart-money', label: 'Where Smart Money Goes', icon: Wallet },
+    { id: 'future-1', label: 'Funds’ Favorite Stocks', icon: Heart },
+    { id: 'future-2', label: 'Top Sold Stocks by Funds', icon: TrendingDown },
   ];
   const monthLabel = useMemo(() => {
     const names = ["january","february","march","april","may","june","july","august","september","october","november","december"];
@@ -170,77 +198,92 @@ function App() {
         setActiveView(view);
       }}
     >
-      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
-        {showHero && (
-          <div className="relative text-center py-4 sm:py-6 px-4">
-            <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 mb-2">Mutual Fund Insights</h2>
-            <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">Clear, simple views into how mutual funds are investing.</p>
-            <button
-              onClick={() => {
-                setShowHero(false);
-                if (typeof window !== 'undefined' && window.localStorage) {
-                  window.localStorage.setItem('hideHero', '1');
-                }
-              }}
-              aria-label="Hide intro"
-              className="absolute top-0 right-0 sm:top-2 sm:right-2 inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50"
-            >
-              <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </button>
+      <div className="max-w-6xl mx-auto space-y-2 sm:space-y-3">
+        {/* Compact Hero Section */}
+        <div className="relative overflow-hidden bg-white/50 rounded-xl border border-slate-200/60 p-2 sm:p-3">
+          <div className="relative z-10 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Logo className="w-6 h-6 sm:w-8 sm:h-8" />
+              <div>
+                <h2 className="text-sm font-bold text-slate-900 leading-tight">
+                  Mutual Fund Insights
+                </h2>
+                <p className="text-[10px] text-slate-500 hidden sm:block">
+                  Track smart money moves, discover fresh buys/sells, and find portfolio overlaps.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setActiveView('dashboard')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200",
+                  activeView === 'dashboard'
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200"
+                )}
+              >
+                <span>Insights</span>
+              </button>
+
+              <button
+                onClick={() => setActiveView('compare')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200",
+                  activeView === 'compare'
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200"
+                )}
+              >
+                <span>Fund Compare</span>
+              </button>
+            </div>
           </div>
-        )}
+        </div>
 
         {!fundsPage && activeView === 'dashboard' && (
-          <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
-            <nav className="flex gap-2 min-w-max" aria-label="Tabs">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  title={
-                    tab.id === 'smart-money'
-                      ? 'Stocks most owned by mutual funds'
-                      : tab.id === 'future-1'
-                      ? 'Stocks most bought this month'
-                      : 'More insights coming soon'
-                  }
-                  className={cn(
-                    'whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm transition-colors',
-                    activeTab === tab.id
-                      ? 'bg-primary text-white shadow-sm'
-                      : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-                  )}
-                >
-                  {tab.label}
-                </button>
-              ))}
+          <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+            <nav className="flex gap-1.5 min-w-max sm:justify-start" aria-label="Tabs">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "group relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all duration-200",
+                      isActive
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200"
+                    )}
+                  >
+                    <Icon className={cn("w-3 h-3 transition-transform", isActive ? "scale-110" : "text-slate-400 group-hover:text-blue-600")} />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
             </nav>
           </div>
         )}
-        {/* Removed global month label to rely on dataset-driven labels inside each section */}
+
+        {/* Section Info Banner - Even More Compact */}
         {activeView === 'dashboard' && !fundsPage && (
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3 sm:p-4 mx-1 sm:mx-0">
-            {activeTab === 'smart-money' && (
-              <div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  This section shows which stocks are most commonly held by mutual funds. A higher rank means the stock is owned by more funds.
-                </p>
-              </div>
-            )}
-            {activeTab === 'future-1' && (
-              <div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  See which stocks mutual funds added more of in the selected month. Stocks higher in the list saw stronger buying activity.
-                </p>
-              </div>
-            )}
-            {activeTab === 'future-2' && (
-              <div>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  See which stocks mutual funds reduced or sold in the selected month. Stocks higher in the list saw more selling by funds.
-                </p>
-              </div>
-            )}
+          <div className="bg-indigo-50/50 rounded-xl border border-indigo-100 p-2 sm:p-2.5 mx-1 sm:mx-0 flex items-center gap-3">
+            <div className="bg-white p-1.5 rounded-lg shrink-0 shadow-sm">
+              <Info className="w-3.5 h-3.5 text-indigo-600" />
+            </div>
+            <p className="text-[11px] sm:text-xs text-indigo-900/80 leading-tight">
+              <span className="font-bold text-indigo-900 mr-1">
+                {activeTab === 'smart-money' && "Most Held Stocks:"}
+                {activeTab === 'future-1' && "Strongest Buying:"}
+                {activeTab === 'future-2' && "Top Selling:"}
+              </span>
+              {activeTab === 'smart-money' && "Stocks owned by the highest number of mutual funds."}
+              {activeTab === 'future-1' && "Stocks where funds increased their holdings most this month."}
+              {activeTab === 'future-2' && "Stocks where funds reduced their holdings most this month."}
+            </p>
           </div>
         )}
 
@@ -280,39 +323,11 @@ function App() {
               />
             </>
           )}
-          {activeView === 'about' && (
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-4 mx-1 sm:mx-0">
-              <h3 className="text-lg sm:text-xl font-semibold text-slate-900">About FinEye</h3>
-              <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-                FinEye is an educational finance website. We help you observe how mutual funds behave—what they’re buying or holding—so you can learn patterns without receiving advice.
-              </p>
-              <div className="space-y-2">
-                <h4 className="text-sm sm:text-base font-semibold text-slate-800">Purpose</h4>
-                <p className="text-sm sm:text-base text-slate-700">Learning and research. We present insights to make disclosures easier to understand.</p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-sm sm:text-base font-semibold text-slate-800">Data Sources</h4>
-                <p className="text-sm sm:text-base text-slate-700">Public mutual fund disclosures compiled into a structured dataset.</p>
-                <p className="text-[10px] sm:text-xs text-slate-500">Data freshness depends on the latest available disclosures.</p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-sm sm:text-base font-semibold text-slate-800">What FinEye does</h4>
-                <p className="text-sm sm:text-base text-slate-700">Shows which stocks mutual funds are buying or holding.</p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-sm sm:text-base font-semibold text-slate-800">What FinEye does NOT do</h4>
-                <p className="text-sm sm:text-base text-slate-700">No stock recommendations, no tips, and no guarantees.</p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-sm sm:text-base font-semibold text-slate-800">Disclaimer</h4>
-                <p className="text-sm sm:text-base text-slate-700">For educational and informational purposes only. You are responsible for your decisions.</p>
-                <p className="text-[10px] sm:text-xs text-slate-500">Always do your own research.</p>
-              </div>
-              <div className="space-y-2">
-                <h4 className="text-sm sm:text-base font-semibold text-slate-800">North Star</h4>
-                <p className="text-sm sm:text-base text-slate-700">FinEye helps you observe smart money — not follow it blindly.</p>
-              </div>
-            </div>
+          {activeView === 'compare' && (
+            <FundCompareView data={data} />
+          )}
+          {['about', 'privacy', 'terms', 'disclaimer', 'contact'].includes(activeView) && (
+            <LegalContent type={activeView} />
           )}
         </div>
       </div>

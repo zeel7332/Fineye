@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        jakarta: ['"Plus Jakarta Sans"', 'sans-serif'],
+      },
       colors: {
         primary: '#1e40af', // Blue-800
         secondary: '#eff6ff', // Blue-50

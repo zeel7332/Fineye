@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fineye.vercel.app/sitemap.xml

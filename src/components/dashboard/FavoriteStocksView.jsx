@@ -10,9 +10,12 @@ export function FavoriteStocksView({ monthLabel }) {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClassifications, setSelectedClassifications] = useState([]);
+  const [selectedSectors, setSelectedSectors] = useState([]);
   const [showClassMenu, setShowClassMenu] = useState(false);
+  const [showSectorMenu, setShowSectorMenu] = useState(false);
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
+  const maxPages = 10;
 
   useEffect(() => {
     const url = FAVORITES_CSV_URL && FAVORITES_CSV_URL.length > 0 ? FAVORITES_CSV_URL : 'Stock_Buy_Nov-25 (1).csv';
@@ -47,17 +50,23 @@ export function FavoriteStocksView({ monthLabel }) {
     return Array.from(new Set(normalized.map(r => r.classification).filter(Boolean))).sort();
   }, [normalized]);
 
+  const allSectors = useMemo(() => {
+    return Array.from(new Set(normalized.map(r => r.sector).filter(Boolean))).sort();
+  }, [normalized]);
+
   const filtered = useMemo(() => {
     const bySearch = searchTerm
       ? normalized.filter(r => 
-          r.stock_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          r.ticker.toLowerCase().includes(searchTerm.toLowerCase())
+          r.stock_name.toLowerCase().includes(searchTerm.toLowerCase())
         )
       : normalized;
     const byClass = selectedClassifications.length > 0
       ? bySearch.filter(r => selectedClassifications.includes(r.classification))
       : bySearch;
-    return [...byClass].sort((a, b) => {
+    const bySector = selectedSectors.length > 0
+      ? byClass.filter(r => selectedSectors.includes(r.sector))
+      : byClass;
+    return [...bySector].sort((a, b) => {
       const av = b.approx_buy_value_cr ?? -Infinity;
       const aa = a.approx_buy_value_cr ?? -Infinity;
       if (av !== aa) return av - aa;
@@ -65,9 +74,14 @@ export function FavoriteStocksView({ monthLabel }) {
       const ba = a.net_qty_bought ?? -Infinity;
       return bv - ba;
     });
-  }, [normalized, searchTerm, selectedClassifications]);
+  }, [normalized, searchTerm, selectedClassifications, selectedSectors]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+  const totalPages = (() => {
+    const pages = Math.ceil(filtered.length / itemsPerPage) || 1;
+    const isFiltering = Boolean(searchTerm.trim()) || (selectedClassifications.length > 0) || (selectedSectors.length > 0);
+    return isFiltering ? pages : Math.min(maxPages, pages);
+  })();
+
   const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   if (loading) {
@@ -78,129 +92,166 @@ export function FavoriteStocksView({ monthLabel }) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 px-1 sm:px-0">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search stock..."
-            className="w-full pl-10 pr-4 py-2 sm:py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm sm:text-base"
-            value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
-          />
-        </div>
-        
-        <div className="relative">
-          <div className="flex flex-col gap-1.5">
-            <span className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider ml-0.5">
-              <FilterIcon className="w-3 h-3" />
-              Classification
-            </span>
-            <div className="flex items-center gap-2">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Search and Filters Card - Ultra Compact */}
+      <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-sm mx-1 sm:mx-0">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Search */}
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search stock..."
+              className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary text-sm transition-all"
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+            />
+          </div>
+          
+          {/* Filters */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Classification */}
+            <div className="relative">
               <button
-                onClick={() => setShowClassMenu(v => !v)}
-                className={`flex-1 sm:flex-none inline-flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-xs sm:text-sm transition-all shadow-sm ${
+                onClick={() => {
+                  setShowClassMenu(v => !v);
+                  setShowSectorMenu(false);
+                }}
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                   showClassMenu || selectedClassifications.length > 0 
-                    ? 'border-primary bg-primary/5 text-primary ring-2 ring-primary/10' 
-                    : 'border-slate-300 bg-white text-slate-700 hover:border-slate-400'
+                    ? 'border-primary bg-primary/5 text-primary' 
+                    : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400'
                 }`}
               >
-                <span className="truncate">
-                  {selectedClassifications.length === 0 ? "All Classifications" : `${selectedClassifications.length} selected`}
-                </span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showClassMenu ? 'rotate-180' : ''}`} />
+                <FilterIcon className="w-3 h-3" />
+                <span>{selectedClassifications.length === 0 ? "Classification" : `${selectedClassifications.length} selected`}</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${showClassMenu ? 'rotate-180' : ''}`} />
               </button>
-              {selectedClassifications.length > 0 && (
-                <button 
-                  onClick={() => { setSelectedClassifications([]); setPage(1); }}
-                  className="p-2 text-slate-400 hover:text-primary transition-colors"
-                >
-                  <span className="text-xs font-medium">Clear</span>
-                </button>
+              
+              {showClassMenu && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setShowClassMenu(false)} />
+                  <div className="absolute left-0 top-full mt-1 w-64 bg-white rounded-xl border border-slate-200 shadow-2xl z-20 py-2 max-h-[300px] overflow-y-auto">
+                    <div className="px-4 py-1.5 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white z-10">
+                      <span className="text-[10px] uppercase font-bold text-slate-400">Classifications</span>
+                      {selectedClassifications.length > 0 && (
+                        <button onClick={() => setSelectedClassifications([])} className="text-[10px] text-primary font-bold">RESET</button>
+                      )}
+                    </div>
+                    {classifications.map(c => (
+                      <label key={c} className="flex items-center px-4 py-2 hover:bg-slate-50 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          className="w-3.5 h-3.5 rounded border-slate-300 text-primary focus:ring-0"
+                          checked={selectedClassifications.includes(c)}
+                          onChange={(e) => {
+                            if (e.target.checked) setSelectedClassifications([...selectedClassifications, c]);
+                            else setSelectedClassifications(selectedClassifications.filter(x => x !== c));
+                            setPage(1);
+                          }}
+                        />
+                        <span className="ml-2.5 text-xs text-slate-600 group-hover:text-slate-900">{c}</span>
+                      </label>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
-          </div>
 
-          {showClassMenu && (
-            <>
-              <div className="fixed inset-0 z-10" onClick={() => setShowClassMenu(false)} />
-              <div className="absolute left-0 top-full mt-2 w-full sm:w-64 bg-white rounded-xl border border-slate-200 shadow-2xl z-20 py-2 max-h-[350px] overflow-y-auto animate-in fade-in zoom-in-95 duration-200 origin-top">
-                <div className="px-4 py-2 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white z-10">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Select Classifications</span>
-                  {selectedClassifications.length > 0 && (
-                    <button 
-                      onClick={() => setSelectedClassifications([])}
-                      className="text-[10px] text-primary hover:underline font-bold"
-                    >
-                      RESET
-                    </button>
-                  )}
-                </div>
-                <div className="mt-1">
-                  {classifications.map(c => (
-                    <label key={c} className="flex items-center px-4 py-2.5 hover:bg-slate-50 cursor-pointer group transition-colors">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/20 transition-all cursor-pointer"
-                        checked={selectedClassifications.includes(c)}
-                        onChange={(e) => {
-                          if (e.target.checked) setSelectedClassifications([...selectedClassifications, c]);
-                          else setSelectedClassifications(selectedClassifications.filter(x => x !== c));
-                          setPage(1);
-                        }}
-                      />
-                      <span className="ml-3 text-sm text-slate-600 group-hover:text-slate-900 font-medium transition-colors">{c}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
+            {/* Sector */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setShowSectorMenu(v => !v);
+                  setShowClassMenu(false);
+                }}
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                  showSectorMenu || selectedSectors.length > 0 
+                    ? 'border-primary bg-primary/5 text-primary' 
+                    : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400'
+                }`}
+              >
+                <FilterIcon className="w-3 h-3" />
+                <span>{selectedSectors.length === 0 ? "Sector" : `${selectedSectors.length} selected`}</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${showSectorMenu ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {showSectorMenu && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setShowSectorMenu(false)} />
+                  <div className="absolute right-0 top-full mt-1 w-64 bg-white rounded-xl border border-slate-200 shadow-2xl z-20 py-2 max-h-[300px] overflow-y-auto">
+                    <div className="px-4 py-1.5 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white z-10">
+                      <span className="text-[10px] uppercase font-bold text-slate-400">Sectors</span>
+                      {selectedSectors.length > 0 && (
+                        <button onClick={() => setSelectedSectors([])} className="text-[10px] text-primary font-bold">RESET</button>
+                      )}
+                    </div>
+                    {allSectors.map(sec => (
+                      <label key={sec} className="flex items-center px-4 py-2 hover:bg-slate-50 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          className="w-3.5 h-3.5 rounded border-slate-300 text-primary focus:ring-0"
+                          checked={selectedSectors.includes(sec)}
+                          onChange={(e) => {
+                            if (e.target.checked) setSelectedSectors([...selectedSectors, sec]);
+                            else setSelectedSectors(selectedSectors.filter(s => s !== sec));
+                            setPage(1);
+                          }}
+                        />
+                        <span className="ml-2.5 text-xs text-slate-600 group-hover:text-slate-900">{sec}</span>
+                      </label>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Reset Button */}
+            {(selectedClassifications.length > 0 || selectedSectors.length > 0) && (
+              <button 
+                onClick={() => { setSelectedClassifications([]); setSelectedSectors([]); setPage(1); }}
+                className="px-2 py-1.5 text-[10px] font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-red-100 uppercase"
+              >
+                Clear
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        {!!monthLabelMemo && (
-          <div className="px-4 sm:px-6 py-2 text-[10px] sm:text-xs text-slate-600 border-b border-slate-200">
-            Data for: {monthLabelMemo}
-          </div>
-        )}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mx-1 sm:mx-0">
         <div className="overflow-x-auto scrollbar-hide">
-          <table className="w-full text-left text-xs sm:text-sm text-slate-600">
+          <table className="w-full text-left text-xs sm:text-sm text-slate-600 min-w-[800px]">
             <thead className="bg-slate-50 text-slate-900 font-semibold border-b border-slate-200">
               <tr>
-                <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Stock Name</th>
-                <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-center">Ticker</th>
-                <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Sector</th>
-                <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Classification</th>
-                <th className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">Month</th>
-                <th className="px-4 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap">Net Qty Bought</th>
-                <th className="px-4 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap">Approx. Buy Value (Rs cr)</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap sticky left-0 bg-slate-50 z-10 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] max-w-[140px] sm:max-w-none">Stock Name</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Sector</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Classification</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Month</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">Net Qty Bought</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">Approx. Buy Value (Rs cr)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {paginated.length > 0 ? (
                 paginated.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/50">
-                    <td className="px-4 sm:px-6 py-3 sm:py-4 font-medium text-slate-900 whitespace-nowrap">
+                  <tr key={idx} className="hover:bg-slate-50/50 group">
+                    <td 
+                      className="px-4 sm:px-6 py-2 sm:py-2.5 font-medium text-slate-900 whitespace-nowrap sticky left-0 bg-white group-hover:bg-slate-50/50 z-10 transition-colors shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] max-w-[140px] sm:max-w-none truncate text-xs sm:text-sm"
+                      title={row.stock_name}
+                    >
                       <span className="inline-flex items-center gap-2">
-                        <span className="p-1 sm:p-1.5 bg-pink-50 text-pink-600 rounded-md">
-                          <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="p-1 bg-pink-50 text-pink-600 rounded-md shrink-0">
+                          <Heart className="w-3 h-3" />
                         </span>
-                        {row.stock_name}
+                        <span className="truncate">{row.stock_name}</span>
                       </span>
                     </td>
-                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-center">
-                      <span className="text-[10px] sm:text-xs font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
-                        {row.ticker || 'N/A'}
-                      </span>
-                    </td>
-                    <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{row.sector || '—'}</td>
-                    <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{row.classification || '—'}</td>
-                    <td className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">{row.month || '—'}</td>
-                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap font-mono">{row.net_qty_bought?.toLocaleString() ?? '—'}</td>
-                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-right whitespace-nowrap font-mono font-semibold text-slate-900">{row.approx_buy_value_cr != null ? row.approx_buy_value_cr.toLocaleString() : '—'}</td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm">{row.sector || '—'}</td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm">{row.classification || '—'}</td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm">{row.month || '—'}</td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 text-right whitespace-nowrap font-mono text-xs sm:text-sm">{row.net_qty_bought?.toLocaleString() ?? '—'}</td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 text-right whitespace-nowrap font-mono font-semibold text-slate-900 text-xs sm:text-sm">{row.approx_buy_value_cr != null ? row.approx_buy_value_cr.toLocaleString() : '—'}</td>
                   </tr>
                 ))
               ) : (
@@ -221,18 +272,29 @@ export function FavoriteStocksView({ monthLabel }) {
             Prev
           </button>
           <div className="flex gap-1 overflow-x-auto max-w-[120px] sm:max-w-none scrollbar-hide">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
-              <button
-                key={n}
-                onClick={() => setPage(n)}
-                className={cn(
-                  n === page ? "bg-primary text-white border-primary" : "bg-white text-slate-700 hover:bg-slate-50 border-slate-300",
-                  "px-2 sm:px-3 py-1 rounded border text-[10px] sm:text-sm flex-shrink-0"
-                )}
-              >
-                {n}
-              </button>
-            ))}
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(n => {
+                if (totalPages <= 5) return true;
+                if (n === 1 || n === totalPages) return true;
+                if (Math.abs(n - page) <= 1) return true;
+                return false;
+              })
+              .map((n, i, arr) => (
+                <React.Fragment key={n}>
+                  {i > 0 && arr[i-1] !== n - 1 && (
+                    <span className="px-1 text-slate-400 self-center text-xs">...</span>
+                  )}
+                  <button
+                    onClick={() => setPage(n)}
+                    className={cn(
+                      n === page ? "bg-primary text-white border-primary shadow-sm" : "bg-white text-slate-700 hover:bg-slate-50 border-slate-300",
+                      "px-2 sm:px-3 py-1 rounded border text-[10px] sm:text-sm flex-shrink-0 transition-all"
+                    )}
+                  >
+                    {n}
+                  </button>
+                </React.Fragment>
+              ))}
           </div>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
