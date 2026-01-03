@@ -93,6 +93,18 @@ export function SoldStocksView({ monthLabel }) {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Month & Summary Banner for Mobile */}
+      <div className="sm:hidden flex items-center justify-between px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg mx-1">
+        <div className="flex flex-col">
+          <span className="text-[10px] uppercase font-bold text-slate-400">Month</span>
+          <span className="text-xs font-semibold text-slate-700">{monthLabel || 'Nov 2025'}</span>
+        </div>
+        <div className="flex flex-col text-right">
+          <span className="text-[10px] uppercase font-bold text-slate-400 text-right">Unit Scale</span>
+          <span className="text-xs font-semibold text-slate-700">Values in Cr.</span>
+        </div>
+      </div>
+
       {/* Search and Filters Card - Ultra Compact */}
       <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-sm mx-1 sm:mx-0">
         <div className="flex flex-wrap items-center gap-2">
@@ -225,11 +237,11 @@ export function SoldStocksView({ monthLabel }) {
             <thead className="bg-slate-50 text-slate-900 font-semibold border-b border-slate-200">
               <tr>
                 <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap sticky left-0 bg-slate-50 z-10 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] max-w-[140px] sm:max-w-none">Stock Name</th>
-                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Sector</th>
-                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Classification</th>
-                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Month</th>
-                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">Net Qty Sold</th>
-                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">Approx. Sell Value (Rs cr)</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap max-w-[80px] sm:max-w-none truncate">Sector</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap max-w-[80px] sm:max-w-none truncate">Classification</th>
+                <th className="hidden sm:table-cell px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Month</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">Net Qty (Cr)</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">Value (Cr)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -247,11 +259,15 @@ export function SoldStocksView({ monthLabel }) {
                         <span className="truncate">{row.stock_name}</span>
                       </span>
                     </td>
-                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm">{row.sector || '—'}</td>
-                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm">{row.classification || '—'}</td>
-                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm">{row.month || '—'}</td>
-                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 text-right whitespace-nowrap font-mono text-xs sm:text-sm">{row.net_qty_sold?.toLocaleString() ?? '—'}</td>
-                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 text-right whitespace-nowrap font-mono font-semibold text-slate-900 text-xs sm:text-sm">{row.approx_sell_value_cr != null ? row.approx_sell_value_cr.toLocaleString() : '—'}</td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm max-w-[80px] sm:max-w-none truncate" title={row.sector}>{row.sector || '—'}</td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm max-w-[80px] sm:max-w-none truncate" title={row.classification}>{row.classification || '—'}</td>
+                    <td className="hidden sm:table-cell px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm">{row.month || '—'}</td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-right font-mono text-xs sm:text-sm text-slate-900">
+                      {row.net_qty_sold != null ? (row.net_qty_sold / 10000000).toFixed(2) : '—'}
+                    </td>
+                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-right font-mono text-xs sm:text-sm font-bold text-slate-900">
+                      {row.approx_sell_value_cr != null ? row.approx_sell_value_cr.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
+                    </td>
                   </tr>
                 ))
               ) : (

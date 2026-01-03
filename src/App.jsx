@@ -214,14 +214,14 @@ function App() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-none justify-end">
               <button
                 onClick={() => setActiveView('dashboard')}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200",
+                  "flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 whitespace-nowrap",
                   activeView === 'dashboard'
-                    ? "bg-slate-900 text-white shadow-sm"
-                    : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200"
+                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                    : "bg-white text-slate-500 hover:text-slate-900 border border-slate-200"
                 )}
               >
                 <span>Insights</span>
@@ -230,13 +230,14 @@ function App() {
               <button
                 onClick={() => setActiveView('compare')}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200",
+                  "flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 whitespace-nowrap",
                   activeView === 'compare'
-                    ? "bg-slate-900 text-white shadow-sm"
-                    : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200"
+                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                    : "bg-white text-slate-500 hover:text-slate-900 border border-slate-200"
                 )}
               >
-                <span>Fund Compare</span>
+                <span className="hidden sm:inline">Fund Compare</span>
+                <span className="sm:hidden">Compare</span>
               </button>
             </div>
           </div>
@@ -244,7 +245,7 @@ function App() {
 
         {!fundsPage && activeView === 'dashboard' && (
           <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
-            <nav className="flex gap-1.5 min-w-max sm:justify-start" aria-label="Tabs">
+            <nav className="flex gap-1.5 min-w-max sm:min-w-0 sm:flex-nowrap" aria-label="Tabs">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -253,14 +254,14 @@ function App() {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      "group relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all duration-200",
+                      "group relative flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-all duration-200 whitespace-nowrap",
                       isActive
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-200"
+                        : "bg-white text-slate-500 hover:text-slate-900 border border-slate-200"
                     )}
                   >
                     <Icon className={cn("w-3 h-3 transition-transform", isActive ? "scale-110" : "text-slate-400 group-hover:text-blue-600")} />
-                    <span>{tab.label}</span>
+                    <span>{tab.label === 'Where Smart Money Goes' ? 'Smart Money' : tab.label === 'Funds’ Favorite Stocks' ? 'Fresh Buy' : 'Top Sold'}</span>
                   </button>
                 );
               })}

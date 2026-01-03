@@ -70,19 +70,19 @@ export function Header({ activeView = 'dashboard', onNavigate }) {
           <nav className="flex flex-col p-4 space-y-2">
             <button
               onClick={() => handleNavigate('dashboard')}
-              className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeView === 'dashboard' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-700'}`}
+              className={`w-full text-center px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-colors ${activeView === 'dashboard' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-500'}`}
             >
               Insights
             </button>
             <button
               onClick={() => handleNavigate('compare')}
-              className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeView === 'compare' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-700'}`}
+              className={`w-full text-center px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-colors ${activeView === 'compare' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-500'}`}
             >
-              Fund Compare
+              Compare
             </button>
             <button
               onClick={() => handleNavigate('about')}
-              className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isLegalView ? 'bg-primary text-white' : 'bg-slate-50 text-slate-700'}`}
+              className={`w-full text-center px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-colors ${isLegalView ? 'bg-primary text-white' : 'bg-slate-50 text-slate-500'}`}
             >
               About
             </button>

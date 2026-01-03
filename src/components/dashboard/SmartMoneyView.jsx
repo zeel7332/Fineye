@@ -216,15 +216,21 @@ export function SmartMoneyView({ data, onOpenFundsPage, monthLabel }) {
         </div>
       </div>
 
+      {/* Info Banner for Mobile Interaction */}
+      <div className="sm:hidden bg-blue-50/50 border border-blue-100/50 rounded-lg p-2 mx-1 flex items-center gap-2">
+        <div className="bg-blue-600 w-1 h-4 rounded-full" />
+        <p className="text-[10px] text-blue-800 font-medium">Tap on any stock to view detailed mutual fund holdings.</p>
+      </div>
+
       {/* Stock List Content */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mx-1 sm:mx-0">
         <div className="overflow-x-auto scrollbar-hide">
-          <div className="min-w-[600px]">
+          <div className="min-w-full sm:min-w-[600px]">
             {/* Table Header */}
             <div className="grid grid-cols-12 bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
-              <div className="col-span-5 md:col-span-7 sticky left-0 bg-slate-50 z-10 -ml-4 sm:-ml-6 pl-4 sm:pl-6 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)]">Stock Name</div>
-              <div className="col-span-4 md:col-span-3 text-center">Funds</div>
-              <div className="col-span-3 md:col-span-2 text-right">Action</div>
+              <div className="col-span-7 sm:col-span-7">Stock Name</div>
+              <div className="col-span-3 sm:col-span-3 text-center">Funds</div>
+              <div className="col-span-2 sm:col-span-2 text-right">Action</div>
             </div>
 
             <div className="divide-y divide-slate-100">
@@ -232,30 +238,37 @@ export function SmartMoneyView({ data, onOpenFundsPage, monthLabel }) {
                 paginatedStocks.map((stock) => (
                   <div key={stock.name} className="transition-colors hover:bg-slate-50 group">
                     <div 
-                      className="grid grid-cols-12 items-center px-4 sm:px-6 py-2 sm:py-2.5 cursor-pointer"
+                      className="grid grid-cols-12 items-center px-4 sm:px-6 py-3 sm:py-2.5 cursor-pointer"
                       onClick={() => toggleExpand(stock.name)}
                     >
                       <div 
-                        className="col-span-5 md:col-span-7 font-medium text-slate-900 text-xs sm:text-sm truncate sticky left-0 bg-white group-hover:bg-slate-50 z-10 -ml-4 sm:-ml-6 pl-4 sm:pl-6 transition-colors shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)]"
+                        className="col-span-7 sm:col-span-7 font-medium text-slate-900 text-xs sm:text-sm"
                         title={stock.name}
                       >
-                        {stock.name}
+                        <div className="flex flex-col">
+                          <span className="truncate max-w-[140px] sm:max-w-none">{stock.name}</span>
+                        </div>
                       </div>
-                      <div className="col-span-4 md:col-span-3 text-center">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium bg-blue-100 text-blue-800 whitespace-nowrap">
+                      <div className="col-span-3 sm:col-span-3 text-center">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
                           {new Set(
                             stock.funds
                               .filter(f => selectedCategories.length === 0 || selectedCategories.includes((f.classification || '').trim()))
                               .map(f => f.fund_name)
-                          ).size} <span className="hidden xs:inline ml-1">Funds</span>
+                          ).size}
                         </span>
                       </div>
-                      <div className="col-span-3 md:col-span-2 text-right">
-                        {expandedStock === stock.name ? (
-                          <ChevronDown className="w-3.5 h-3.5 sm:w-4 h-4 text-slate-400 inline-block" />
-                        ) : (
-                          <ChevronRight className="w-3.5 h-3.5 sm:w-4 h-4 text-slate-400 inline-block" />
-                        )}
+                      <div className="col-span-2 sm:col-span-2 text-right">
+                        <div className={cn(
+                          "w-6 h-6 rounded-full flex items-center justify-center ml-auto transition-colors",
+                          expandedStock === stock.name ? "bg-primary/10" : "bg-slate-50"
+                        )}>
+                          {expandedStock === stock.name ? (
+                            <ChevronDown className="w-3.5 h-3.5 text-primary" />
+                          ) : (
+                            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                          )}
+                        </div>
                       </div>
                     </div>
 
