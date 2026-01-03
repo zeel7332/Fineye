@@ -5,6 +5,7 @@ import { FavoriteStocksView } from './components/dashboard/FavoriteStocksView';
 import { SoldStocksView } from './components/dashboard/SoldStocksView';
 import { FundCompareView } from './components/dashboard/FundCompareView';
 import { LegalContent } from './components/dashboard/LegalContent';
+import { LandingPage } from './components/dashboard/LandingPage';
 import { cn } from './lib/utils';
 import { fetchCsv } from './lib/fetchCsv';
 import { DATA_CSV_URL } from './config';
@@ -146,7 +147,7 @@ function FundsListPage({ stock, classificationFilter, onBack, monthLabel }) {
 }
 
 function App() {
-  const [activeView, setActiveView] = useState('dashboard');
+  const [activeView, setActiveView] = useState('home');
   const [activeTab, setActiveTab] = useState('smart-money');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -198,6 +199,12 @@ function App() {
         setActiveView(view);
       }}
     >
+      {activeView === 'home' ? (
+        <LandingPage onNavigate={(view) => {
+          setFundsPage(null);
+          setActiveView(view);
+        }} />
+      ) : (
       <div className="max-w-6xl mx-auto space-y-2 sm:space-y-3">
         {/* Compact Hero Section */}
         <div className="relative overflow-hidden bg-white/50 rounded-xl border border-slate-200/60 p-2 sm:p-3">
@@ -271,20 +278,29 @@ function App() {
 
         {/* Section Info Banner - Even More Compact */}
         {activeView === 'dashboard' && !fundsPage && (
-          <div className="bg-indigo-50/50 rounded-xl border border-indigo-100 p-2 sm:p-2.5 mx-1 sm:mx-0 flex items-center gap-3">
-            <div className="bg-white p-1.5 rounded-lg shrink-0 shadow-sm">
-              <Info className="w-3.5 h-3.5 text-indigo-600" />
+          <div className="space-y-2">
+            <div className="bg-indigo-50/50 rounded-xl border border-indigo-100 p-2 sm:p-2.5 mx-1 sm:mx-0 flex items-center gap-3">
+              <div className="bg-white p-1.5 rounded-lg shrink-0 shadow-sm">
+                <Info className="w-3.5 h-3.5 text-indigo-600" />
+              </div>
+              <p className="text-[11px] sm:text-xs text-indigo-900/80 leading-tight">
+                <span className="font-bold text-indigo-900 mr-1">
+                  {activeTab === 'smart-money' && "Most Held Stocks:"}
+                  {activeTab === 'future-1' && "Strongest Buying:"}
+                  {activeTab === 'future-2' && "Top Selling:"}
+                </span>
+                {activeTab === 'smart-money' && "Stocks owned by the highest number of mutual funds."}
+                {activeTab === 'future-1' && "Stocks where funds increased their holdings most this month."}
+                {activeTab === 'future-2' && "Stocks where funds reduced their holdings most this month."}
+              </p>
             </div>
-            <p className="text-[11px] sm:text-xs text-indigo-900/80 leading-tight">
-              <span className="font-bold text-indigo-900 mr-1">
-                {activeTab === 'smart-money' && "Most Held Stocks:"}
-                {activeTab === 'future-1' && "Strongest Buying:"}
-                {activeTab === 'future-2' && "Top Selling:"}
-              </span>
-              {activeTab === 'smart-money' && "Stocks owned by the highest number of mutual funds."}
-              {activeTab === 'future-1' && "Stocks where funds increased their holdings most this month."}
-              {activeTab === 'future-2' && "Stocks where funds reduced their holdings most this month."}
-            </p>
+            
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50/80 border border-slate-200/60 rounded-lg mx-1 sm:mx-0">
+              <div className="w-1 h-1 rounded-full bg-slate-400 shrink-0" />
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium">
+                All insights are based on the most recent mutual fund portfolios and are updated after the 10th of each month, following official disclosures by fund houses.
+              </p>
+            </div>
           </div>
         )}
 
@@ -332,6 +348,7 @@ function App() {
           )}
         </div>
       </div>
+      )}
     </Layout>
   );
 }

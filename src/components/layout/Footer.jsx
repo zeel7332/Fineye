@@ -1,4 +1,5 @@
 import React from 'react';
+import { Logo } from '../common/Logo';
 
 export function Footer({ onNavigate, activeView }) {
   const links = [
@@ -13,14 +14,7 @@ export function Footer({ onNavigate, activeView }) {
     <footer className="bg-white border-t border-slate-200 py-8 sm:py-12 mt-auto">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start mb-8">
-          <div className="text-center md:text-left">
-            <h3 className="text-lg font-bold text-slate-900 mb-2">FinEye</h3>
-            <p className="text-sm text-slate-500 max-w-xs mx-auto md:mx-0">
-              Observing smart money trends in Indian Mutual Funds. Educational and data-driven.
-            </p>
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+          <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2">
             {links.map(link => (
               <button
                 key={link.view}
@@ -35,6 +29,8 @@ export function Footer({ onNavigate, activeView }) {
               </button>
             ))}
           </div>
+
+          <div className="hidden md:block"></div>
 
           <div className="text-center md:text-right">
             <details className="text-[10px] sm:text-xs inline-block">

@@ -1,102 +1,118 @@
-import React, { useEffect, useState } from 'react';
-import { Menu, X } from 'lucide-react';
-import { Logo } from '../common/Logo';
+import React, { useState } from 'react';
+import { Menu, X, Home } from 'lucide-react';
+import { cn } from '../../lib/utils';
+import logoUrl from '../../assets/logo.svg';
 
-export function Header({ activeView = 'dashboard', onNavigate }) {
-  const [scrolled, setScrolled] = useState(false);
+export function Header({ activeView, onNavigate }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   const handleNavigate = (view) => {
     onNavigate && onNavigate(view);
     setIsMenuOpen(false);
   };
 
-  const isLegalView = ['about', 'privacy', 'terms', 'disclaimer', 'contact'].includes(activeView);
-
   return (
-    <header className={`sticky top-0 z-50 border-b ${scrolled ? 'bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-slate-200' : 'bg-white border-slate-200'}`}>
-      <div className="container mx-auto px-4 h-12 sm:h-14 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Logo className="w-6 h-6 sm:w-8 sm:h-8" />
-          <div>
-            <h1 className="text-base sm:text-lg font-semibold text-slate-900 tracking-tight leading-none font-jakarta">FinEye</h1>
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo Section */}
+          <div 
+            className="flex items-center space-x-2 cursor-pointer" 
+            onClick={() => handleNavigate('home')}
+          >
+            <img src={logoUrl} alt="FinEye Logo" className="w-6 h-6 sm:w-8 sm:h-8 object-contain" />
+            <div>
+              <h1 className="text-base sm:text-lg font-semibold text-slate-900 tracking-tight leading-none font-jakarta">FinEye</h1>
+            </div>
           </div>
-        </div>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider">
-          <button
-            onClick={() => handleNavigate('dashboard')}
-            className={`${activeView === 'dashboard' ? 'text-primary' : 'text-slate-500 hover:text-slate-900'} px-2 py-1 transition-all`}
-          >
-            Insights
-          </button>
-          <span className="text-slate-300">|</span>
-          <button
-            onClick={() => handleNavigate('compare')}
-            className={`${activeView === 'compare' ? 'text-primary' : 'text-slate-500 hover:text-slate-900'} px-2 py-1 transition-all`}
-          >
-            Fund Compare
-          </button>
-          <span className="text-slate-300">|</span>
-          <button
-            onClick={() => handleNavigate('about')}
-            className={`${isLegalView ? 'text-primary' : 'text-slate-500 hover:text-slate-900'} px-2 py-1 transition-all`}
-          >
-            About
-          </button>
-        </nav>
-
-        {/* Mobile Menu Button */}
-        <button 
-          className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? <X className="w-6 h-6 text-slate-600" /> : <Menu className="w-6 h-6 text-slate-600" />}
-        </button>
-      </div>
-
-      {/* Mobile Nav Overlay */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-slate-200 animate-in slide-in-from-top duration-200">
-          <nav className="flex flex-col p-4 space-y-2">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-1">
+            {activeView !== 'home' && (
+              <button
+                onClick={() => handleNavigate('home')}
+                className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                title="Home"
+              >
+                <Home className="w-5 h-5" />
+              </button>
+            )}
+            
             <button
               onClick={() => handleNavigate('dashboard')}
-              className={`w-full text-center px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-colors ${activeView === 'dashboard' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-500'}`}
+              className={cn(
+                "px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+                activeView === 'dashboard'
+                  ? "bg-primary/10 text-primary"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              )}
             >
               Insights
             </button>
             <button
               onClick={() => handleNavigate('compare')}
-              className={`w-full text-center px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-colors ${activeView === 'compare' ? 'bg-primary text-white' : 'bg-slate-50 text-slate-500'}`}
+              className={cn(
+                "px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+                activeView === 'compare'
+                  ? "bg-primary/10 text-primary"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              )}
             >
-              Compare
-            </button>
-            <button
-              onClick={() => handleNavigate('about')}
-              className={`w-full text-center px-4 py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-colors ${isLegalView ? 'bg-primary text-white' : 'bg-slate-50 text-slate-500'}`}
-            >
-              About
+              Fund Compare
             </button>
           </nav>
-        </div>
-      )}
 
-      <div className="border-t border-slate-200 bg-slate-50">
-        <div className="container mx-auto px-4 py-1 sm:py-1.5 text-center sm:text-left">
-          <p className="text-[10px] sm:text-[11px] text-slate-500 leading-tight">
-            For educational and informational purposes only. Not investment advice.
-          </p>
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden border-t border-slate-200 bg-white">
+          <div className="px-4 pt-2 pb-4 space-y-1">
+            <button
+              onClick={() => handleNavigate('home')}
+              className={cn(
+                "w-full flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-lg transition-colors",
+                activeView === 'home'
+                  ? "bg-primary/10 text-primary"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              )}
+            >
+              <Home className="w-4 h-4" />
+              Home
+            </button>
+            <button
+              onClick={() => handleNavigate('dashboard')}
+              className={cn(
+                "w-full text-left px-4 py-3 text-sm font-medium rounded-lg transition-colors",
+                activeView === 'dashboard'
+                  ? "bg-primary/10 text-primary"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              )}
+            >
+              Insights
+            </button>
+            <button
+              onClick={() => handleNavigate('compare')}
+              className={cn(
+                "w-full text-left px-4 py-3 text-sm font-medium rounded-lg transition-colors",
+                activeView === 'compare'
+                  ? "bg-primary/10 text-primary"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              )}
+            >
+              Fund Compare
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
