@@ -170,9 +170,9 @@ function App() {
   }, []);
 
   const tabs = [
-    { id: 'smart-money', label: 'Where Smart Money Goes', icon: Wallet },
-    { id: 'future-1', label: 'Funds’ Favorite Stocks', icon: Heart },
-    { id: 'future-2', label: 'Top Sold Stocks by Funds', icon: TrendingDown },
+    { id: 'smart-money', label: 'Smart Money', icon: Wallet },
+    { id: 'fresh-buy', label: 'Fresh Buy', icon: Heart },
+    { id: 'top-sold', label: 'Top Sold', icon: TrendingDown },
   ];
   const monthLabel = useMemo(() => {
     const names = ["january","february","march","april","may","june","july","august","september","october","november","december"];
@@ -270,7 +270,7 @@ function App() {
                     )}
                   >
                     <Icon className={cn("w-3 h-3 transition-transform", isActive ? "scale-110" : "text-slate-400 group-hover:text-blue-600")} />
-                    <span>{tab.label === 'Where Smart Money Goes' ? 'Smart Money' : tab.label === 'Funds’ Favorite Stocks' ? 'Fresh Buy' : 'Top Sold'}</span>
+                    <span>{tab.label}</span>
                   </button>
                 );
               })}
@@ -288,12 +288,12 @@ function App() {
               <p className="text-[11px] sm:text-xs text-indigo-900/80 leading-tight">
                 <span className="font-bold text-indigo-900 mr-1">
                   {activeTab === 'smart-money' && "Most Held Stocks:"}
-                  {activeTab === 'future-1' && "Strongest Buying:"}
-                  {activeTab === 'future-2' && "Top Selling:"}
+                  {activeTab === 'fresh-buy' && "Strongest Buying:"}
+                  {activeTab === 'top-sold' && "Top Selling:"}
                 </span>
                 {activeTab === 'smart-money' && "Stocks owned by the highest number of mutual funds."}
-                {activeTab === 'future-1' && "Stocks where funds increased their holdings most this month."}
-                {activeTab === 'future-2' && "Stocks where funds reduced their holdings most this month."}
+                {activeTab === 'fresh-buy' && "Stocks where funds increased their holdings most this month."}
+                {activeTab === 'top-sold' && "Stocks where funds reduced their holdings most this month."}
               </p>
             </div>
             
@@ -321,10 +321,10 @@ function App() {
               />
             )
           )}
-          {activeView === 'dashboard' && !fundsPage && activeTab === 'future-1' && (
+          {activeView === 'dashboard' && !fundsPage && activeTab === 'fresh-buy' && (
             <FavoriteStocksView monthLabel={monthLabel} />
           )}
-          {activeView === 'dashboard' && !fundsPage && activeTab === 'future-2' && (
+          {activeView === 'dashboard' && !fundsPage && activeTab === 'top-sold' && (
             <SoldStocksView monthLabel={monthLabel} />
           )}
           {activeView === 'dashboard' && fundsPage && (

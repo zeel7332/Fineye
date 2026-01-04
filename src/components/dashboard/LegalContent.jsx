@@ -92,7 +92,7 @@ export function LegalContent({ type }) {
           heading: 'Email Support',
           text: 'You can reach us directly at:',
           isEmail: true,
-          email: 'support@fineye.site'
+          email: 'fineyeinfo@gmail.com'
         },
         {
           heading: 'Response Time',

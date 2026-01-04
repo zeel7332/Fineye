@@ -1,7 +1,6 @@
 import React from 'react';
 import { ArrowRight, TrendingUp, BarChart3, PieChart, Shield, Check, Scale, Compass } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import logoUrl from '../../assets/logo.svg';
 
 export function LandingPage({ onNavigate }) {
   return (
@@ -189,9 +188,6 @@ export function LandingPage({ onNavigate }) {
 
       {/* SEO Keywords (Subtle Footer) */}
       <div className="py-6 border-t border-slate-100 mt-auto flex flex-col items-center gap-4">
-        <div className="opacity-50 hover:opacity-100 transition-opacity duration-300">
-          <img src={logoUrl} alt="FinEye Logo" className="w-10 h-10 object-contain grayscale" />
-        </div>
         <p className="text-[10px] text-slate-300 flex flex-wrap justify-center gap-x-4 gap-y-2 text-center px-4">
           <span>Indian mutual funds</span>
           <span className="w-1 h-1 rounded-full bg-slate-200 my-auto" />

@@ -43,7 +43,7 @@ export async function fetchCsv(url) {
                 const classification = (r.classification ?? r["Classification"] ?? r["classification"] ?? "").trim();
                 const month = (r.month ?? r["Month"] ?? r["month"] ?? "").trim();
                 const stock_name =
-                  (r.stock_name ?? r["Stock/Instrument"] ?? r["Stock / Instrument"] ?? r["stock/instrument"] ?? "").trim();
+                  (r.stock_name ?? r["Stock Name"] ?? r["Stock/Instrument"] ?? r["Stock / Instrument"] ?? r["stock/instrument"] ?? "").trim();
                 const percent_aum_raw =
                   (r.percent_aum ?? r["Percent AUM"] ?? r["percent aum"] ?? "").toString().trim();
                 const percent_aum = parseFloat(percent_aum_raw) || null;

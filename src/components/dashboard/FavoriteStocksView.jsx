@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Search, Heart, ChevronDown, Filter as FilterIcon } from 'lucide-react';
+import { Search, Heart, ChevronDown, ChevronRight, Filter as FilterIcon } from 'lucide-react';
 import { fetchCsv } from '../../lib/fetchCsv';
 import { FAVORITES_CSV_URL } from '../../config';
 import { cn } from '../../lib/utils';
@@ -231,12 +231,19 @@ export function FavoriteStocksView({ monthLabel }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mx-1 sm:mx-0">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mx-1 sm:mx-0 relative">
+        {/* Scroll Indicator for Mobile */}
+        <div className="sm:hidden absolute right-2 top-1/2 -translate-y-1/2 z-20 pointer-events-none animate-pulse">
+          <div className="bg-primary/20 p-1.5 rounded-full backdrop-blur-sm">
+            <ChevronRight className="w-4 h-4 text-primary" />
+          </div>
+        </div>
+        
         <div className="overflow-x-auto scrollbar-hide">
-          <table className="w-full text-left text-xs sm:text-sm text-slate-600 min-w-[800px]">
+          <table className="w-full text-left text-xs sm:text-sm text-slate-600 min-w-[700px]">
             <thead className="bg-slate-50 text-slate-900 font-semibold border-b border-slate-200">
               <tr>
-                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap sticky left-0 bg-slate-50 z-10 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] max-w-[140px] sm:max-w-none">Stock Name</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap sticky left-0 bg-slate-50 z-10 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] max-w-[120px] sm:max-w-none">Stock Name</th>
                 <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap max-w-[80px] sm:max-w-none truncate">Sector</th>
                 <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap max-w-[80px] sm:max-w-none truncate">Classification</th>
                 <th className="hidden sm:table-cell px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Month</th>
@@ -249,7 +256,7 @@ export function FavoriteStocksView({ monthLabel }) {
                 paginated.map((row, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/50 group">
                     <td 
-                      className="px-4 sm:px-6 py-2 sm:py-2.5 font-medium text-slate-900 whitespace-nowrap sticky left-0 bg-white group-hover:bg-slate-50/50 z-10 transition-colors shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] max-w-[140px] sm:max-w-none truncate text-xs sm:text-sm"
+                      className="px-4 sm:px-6 py-2 sm:py-2.5 font-medium text-slate-900 whitespace-nowrap sticky left-0 bg-white group-hover:bg-slate-50/50 z-10 transition-colors shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] max-w-[120px] sm:max-w-none truncate text-xs sm:text-sm"
                       title={row.stock_name}
                     >
                       <span className="inline-flex items-center gap-2">

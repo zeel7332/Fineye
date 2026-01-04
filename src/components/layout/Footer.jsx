@@ -45,9 +45,12 @@ export function Footer({ onNavigate, activeView }) {
         </div>
 
         <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-400">
-            © {new Date().getFullYear()} FinEye. Built for Indian Investors.
-          </p>
+          <div className="flex items-center gap-2">
+            <Logo className="w-5 h-5" />
+            <p className="text-xs text-slate-400">
+              © {new Date().getFullYear()} FinEye. Built for Indian Investors.
+            </p>
+          </div>
           <p className="text-[10px] text-slate-400 max-w-md text-center md:text-right italic">
             Disclaimer: FinEye is not a SEBI registered advisor. All data is for educational purposes only.
           </p>

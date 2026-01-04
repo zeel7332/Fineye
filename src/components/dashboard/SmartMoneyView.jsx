@@ -25,10 +25,19 @@ export function SmartMoneyView({ data, onOpenFundsPage, monthLabel }) {
       if (!groups.has(key)) {
         groups.set(key, { 
           name: raw, 
-          ticker: item.ticker || '',
-          sector: item.sector || '',
+          ticker: (item.ticker || '').trim(),
+          sector: (item.sector || '').trim(),
           funds: [] 
         });
+      } else {
+        // If ticker was empty before, try to fill it from this row
+        const existing = groups.get(key);
+        if (!existing.ticker && item.ticker) {
+          existing.ticker = item.ticker.trim();
+        }
+        if (!existing.sector && item.sector) {
+          existing.sector = item.sector.trim();
+        }
       }
       groups.get(key).funds.push(item);
     });
@@ -228,9 +237,10 @@ export function SmartMoneyView({ data, onOpenFundsPage, monthLabel }) {
           <div className="min-w-full sm:min-w-[600px]">
             {/* Table Header */}
             <div className="grid grid-cols-12 bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
-              <div className="col-span-7 sm:col-span-7">Stock Name</div>
-              <div className="col-span-3 sm:col-span-3 text-center">Funds</div>
-              <div className="col-span-2 sm:col-span-2 text-right">Action</div>
+              <div className="col-span-5">Stock Name</div>
+              <div className="col-span-3">Ticker</div>
+              <div className="col-span-2 text-center">Funds</div>
+              <div className="col-span-2 text-right">Action</div>
             </div>
 
             <div className="divide-y divide-slate-100">
@@ -242,14 +252,17 @@ export function SmartMoneyView({ data, onOpenFundsPage, monthLabel }) {
                       onClick={() => toggleExpand(stock.name)}
                     >
                       <div 
-                        className="col-span-7 sm:col-span-7 font-medium text-slate-900 text-xs sm:text-sm"
+                        className="col-span-5 font-medium text-slate-900 text-xs sm:text-sm"
                         title={stock.name}
                       >
                         <div className="flex flex-col">
-                          <span className="truncate max-w-[140px] sm:max-w-none">{stock.name}</span>
+                          <span className="truncate max-w-[120px] sm:max-w-none">{stock.name}</span>
                         </div>
                       </div>
-                      <div className="col-span-3 sm:col-span-3 text-center">
+                      <div className="col-span-3 text-slate-500 text-[10px] sm:text-xs font-medium uppercase tracking-wider">
+                        {stock.ticker || '—'}
+                      </div>
+                      <div className="col-span-2 text-center">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
                           {new Set(
                             stock.funds
@@ -258,7 +271,7 @@ export function SmartMoneyView({ data, onOpenFundsPage, monthLabel }) {
                           ).size}
                         </span>
                       </div>
-                      <div className="col-span-2 sm:col-span-2 text-right">
+                      <div className="col-span-2 text-right">
                         <div className={cn(
                           "w-6 h-6 rounded-full flex items-center justify-center ml-auto transition-colors",
                           expandedStock === stock.name ? "bg-primary/10" : "bg-slate-50"
