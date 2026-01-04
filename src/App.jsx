@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { Layout } from './components/layout/Layout';
 import { SmartMoneyView } from './components/dashboard/SmartMoneyView';
 import { FavoriteStocksView } from './components/dashboard/FavoriteStocksView';
@@ -199,6 +200,7 @@ function App() {
         setActiveView(view);
       }}
     >
+      <Analytics />
       {activeView === 'home' ? (
         <LandingPage onNavigate={(view) => {
           setFundsPage(null);
