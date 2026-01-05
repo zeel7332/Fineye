@@ -60,6 +60,17 @@ export function Header({ activeView, onNavigate }) {
             >
               Fund Compare
             </button>
+            <button
+              onClick={() => handleNavigate('learn')}
+              className={cn(
+                "px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+                activeView === 'learn'
+                  ? "bg-primary/10 text-primary"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              )}
+            >
+              Learn
+            </button>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -109,6 +120,17 @@ export function Header({ activeView, onNavigate }) {
               )}
             >
               Fund Compare
+            </button>
+            <button
+              onClick={() => handleNavigate('learn')}
+              className={cn(
+                "w-full text-left px-4 py-3 text-sm font-medium rounded-lg transition-colors",
+                activeView === 'learn'
+                  ? "bg-primary/10 text-primary"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+              )}
+            >
+              Learn
             </button>
           </div>
         </div>

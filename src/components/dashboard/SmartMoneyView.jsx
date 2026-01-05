@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Search, ChevronDown, ChevronRight, Filter as FilterIcon } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, Filter as FilterIcon, Lightbulb, ArrowRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
-export function SmartMoneyView({ data, onOpenFundsPage, monthLabel }) {
+export function SmartMoneyView({ data, onOpenFundsPage, onNavigate, monthLabel }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedStock, setExpandedStock] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -99,6 +99,30 @@ export function SmartMoneyView({ data, onOpenFundsPage, monthLabel }) {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Educational CTA Banner */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-4 sm:p-5 text-white shadow-lg shadow-blue-200/50 mx-1 sm:mx-0">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm shrink-0">
+              <Lightbulb className="w-5 h-5 text-white" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-sm sm:text-base font-bold">New to investing?</h3>
+              <p className="text-xs text-blue-100 leading-relaxed max-w-xl">
+                Learn how to identify safer stocks by following "Smart Money" institutional moves. Our expert guide explains how to use these filters effectively.
+              </p>
+            </div>
+          </div>
+          <button 
+            onClick={() => onNavigate('learn')}
+            className="flex items-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-50 transition-colors shrink-0 shadow-sm"
+          >
+            Learn Strategy
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
       {/* Search and Filters Card - Ultra Compact */}
       <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-sm mx-1 sm:mx-0">
         <div className="flex flex-wrap items-center gap-2">

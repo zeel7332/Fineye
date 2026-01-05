@@ -4,9 +4,9 @@ import { fetchCsv } from '../../lib/fetchCsv';
 import { FAVORITES_CSV_URL } from '../../config';
 import { cn } from '../../lib/utils';
 
-export function FavoriteStocksView({ monthLabel }) {
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function FavoriteStocksView({ monthLabel, initialData }) {
+  const [rows, setRows] = useState(initialData || []);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClassifications, setSelectedClassifications] = useState([]);
@@ -18,6 +18,12 @@ export function FavoriteStocksView({ monthLabel }) {
   const maxPages = 10;
 
   useEffect(() => {
+    if (initialData && initialData.length > 0) {
+      setRows(initialData);
+      setLoading(false);
+      return;
+    }
+
     const url = FAVORITES_CSV_URL && FAVORITES_CSV_URL.length > 0 ? FAVORITES_CSV_URL : 'Stock_Buy_Nov-25 (1).csv';
     fetchCsv(url)
       .then(data => {
@@ -28,7 +34,7 @@ export function FavoriteStocksView({ monthLabel }) {
         setError(err.message || 'Failed to load favorites data');
         setLoading(false);
       });
-  }, []);
+  }, [initialData]);
 
   const monthLabelMemo = monthLabel;
 

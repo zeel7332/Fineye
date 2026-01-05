@@ -5,6 +5,7 @@ import { SmartMoneyView } from './components/dashboard/SmartMoneyView';
 import { FavoriteStocksView } from './components/dashboard/FavoriteStocksView';
 import { SoldStocksView } from './components/dashboard/SoldStocksView';
 import { FundCompareView } from './components/dashboard/FundCompareView';
+import { EducationView } from './components/dashboard/EducationView';
 import { LegalContent } from './components/dashboard/LegalContent';
 import { LandingPage } from './components/dashboard/LandingPage';
 import { cn } from './lib/utils';
@@ -151,16 +152,32 @@ function App() {
   const [activeView, setActiveView] = useState('home');
   const [activeTab, setActiveTab] = useState('smart-money');
   const [data, setData] = useState([]);
+  const [favoritesData, setFavoritesData] = useState([]);
+  const [sellsData, setSellsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [fundsPage, setFundsPage] = useState(null);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeView, activeTab, fundsPage]);
 
   useEffect(() => {
-    const url = DATA_CSV_URL && DATA_CSV_URL.length > 0 ? DATA_CSV_URL : 'data.csv';
-    fetchCsv(url)
-      .then(rows => {
-        setData(rows);
+    const dataUrl = DATA_CSV_URL && DATA_CSV_URL.length > 0 ? DATA_CSV_URL : 'data.csv';
+    const favoritesUrl = 'Stock_Buy_Nov-25 (1).csv';
+    const sellsUrl = 'Stock_Sell_Nov-25.csv';
+
+    setLoading(true);
+    
+    Promise.all([
+      fetchCsv(dataUrl).catch(() => []),
+      fetchCsv(favoritesUrl).catch(() => []),
+      fetchCsv(sellsUrl).catch(() => [])
+    ])
+      .then(([mainData, favData, sellData]) => {
+        setData(mainData);
+        setFavoritesData(favData);
+        setSellsData(sellData);
         setLoading(false);
       })
       .catch(err => {
@@ -221,33 +238,6 @@ function App() {
                   Track smart money moves, discover fresh buys/sells, and find portfolio overlaps.
                 </p>
               </div>
-            </div>
-
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-none justify-end">
-              <button
-                onClick={() => setActiveView('dashboard')}
-                className={cn(
-                  "flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 whitespace-nowrap",
-                  activeView === 'dashboard'
-                    ? "bg-primary text-white shadow-md shadow-primary/20"
-                    : "bg-white text-slate-500 hover:text-slate-900 border border-slate-200"
-                )}
-              >
-                <span>Insights</span>
-              </button>
-
-              <button
-                onClick={() => setActiveView('compare')}
-                className={cn(
-                  "flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-200 whitespace-nowrap",
-                  activeView === 'compare'
-                    ? "bg-primary text-white shadow-md shadow-primary/20"
-                    : "bg-white text-slate-500 hover:text-slate-900 border border-slate-200"
-                )}
-              >
-                <span className="hidden sm:inline">Fund Compare</span>
-                <span className="sm:hidden">Compare</span>
-              </button>
             </div>
           </div>
         </div>
@@ -317,15 +307,16 @@ function App() {
               <SmartMoneyView
                 data={data}
                 onOpenFundsPage={(stock, classifications) => setFundsPage({ stock, classifications })}
+                onNavigate={(view) => setActiveView(view)}
                 monthLabel={monthLabel}
               />
             )
           )}
           {activeView === 'dashboard' && !fundsPage && activeTab === 'fresh-buy' && (
-            <FavoriteStocksView monthLabel={monthLabel} />
+            <FavoriteStocksView monthLabel={monthLabel} initialData={favoritesData} />
           )}
           {activeView === 'dashboard' && !fundsPage && activeTab === 'top-sold' && (
-            <SoldStocksView monthLabel={monthLabel} />
+            <SoldStocksView monthLabel={monthLabel} initialData={sellsData} />
           )}
           {activeView === 'dashboard' && fundsPage && (
             <>
@@ -344,6 +335,9 @@ function App() {
           )}
           {activeView === 'compare' && (
             <FundCompareView data={data} />
+          )}
+          {activeView === 'learn' && (
+            <EducationView onNavigate={(view) => setActiveView(view)} />
           )}
           {['about', 'privacy', 'terms', 'disclaimer', 'contact'].includes(activeView) && (
             <LegalContent type={activeView} />
