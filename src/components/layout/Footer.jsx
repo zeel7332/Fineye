@@ -21,7 +21,7 @@ export function Footer({ onNavigate, activeView }) {
                 onClick={() => onNavigate?.(link.view)}
                 className={`text-sm transition-colors font-medium ${
                   activeView === link.view 
-                    ? 'text-primary' 
+                    ? 'text-primary font-bold' 
                     : 'text-slate-600 hover:text-primary'
                 }`}
               >

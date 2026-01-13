@@ -21,11 +21,11 @@ export function MobileNav({ activeView, onNavigate }) {
             onClick={() => onNavigate(item.id)}
             className={cn(
               "flex flex-col items-center gap-1 transition-colors",
-              isActive ? "text-primary" : "text-slate-400"
+              isActive ? "text-blue-600" : "text-slate-400"
             )}
           >
             <Icon className={cn("w-5 h-5", isActive ? "stroke-[2.5px]" : "stroke-[2px]")} />
-            <span className={cn("text-[10px] font-bold uppercase tracking-wider", isActive ? "text-primary" : "text-slate-500")}>
+            <span className={cn("text-[10px] font-bold uppercase tracking-wider", isActive ? "text-blue-600" : "text-slate-500")}>
               {item.label}
             </span>
           </button>

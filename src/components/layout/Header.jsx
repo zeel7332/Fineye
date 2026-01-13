@@ -11,6 +11,8 @@ export function Header({ activeView, onNavigate }) {
     setIsMenuOpen(false);
   };
 
+  const isHome = activeView === 'home';
+
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -28,7 +30,7 @@ export function Header({ activeView, onNavigate }) {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
-            {activeView !== 'home' && (
+            {!isHome && (
               <button
                 onClick={() => handleNavigate('home')}
                 className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"

@@ -1,10 +1,17 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { ArrowRight, TrendingUp, BarChart3, PieChart, Shield, Check, Scale, Compass } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export function LandingPage({ onNavigate }) {
   return (
     <div className="space-y-4 sm:space-y-8 py-4 sm:py-6">
+      <Helmet>
+        <title>FinEye - Smart Mutual Fund Insights for Indian Investors</title>
+        <meta name="description" content="Track mutual fund smart money moves, analyze portfolio overlaps, and discover institutional buying/selling trends in the Indian market." />
+        <meta property="og:title" content="FinEye - Smart Mutual Fund Insights" />
+        <meta property="og:description" content="Stop guessing. Track what India's top mutual funds are buying and selling in real-time." />
+      </Helmet>
       
       {/* 1. Hero Content */}
       <section className="text-center space-y-2 sm:space-y-4 max-w-4xl mx-auto px-4">

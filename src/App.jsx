@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Analytics } from '@vercel/analytics/react';
 import { Layout } from './components/layout/Layout';
 import { SmartMoneyView } from './components/dashboard/SmartMoneyView';
@@ -149,7 +151,15 @@ function FundsListPage({ stock, classificationFilter, onBack, monthLabel }) {
 }
 
 function App() {
-  const [activeView, setActiveView] = useState('home');
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Determine active view from URL
+  const activeView = useMemo(() => {
+    const path = location.pathname.split('/')[1] || 'home';
+    return path;
+  }, [location]);
+
   const [activeTab, setActiveTab] = useState('smart-money');
   const [data, setData] = useState([]);
   const [favoritesData, setFavoritesData] = useState([]);
@@ -160,8 +170,13 @@ function App() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [activeView, activeTab, fundsPage]);
+  }, [location.pathname, activeTab, fundsPage]);
 
+  const onNavigate = (view) => {
+    setFundsPage(null);
+    if (view === 'home') navigate('/');
+    else navigate(`/${view}`);
+  };
   useEffect(() => {
     const dataUrl = DATA_CSV_URL && DATA_CSV_URL.length > 0 ? DATA_CSV_URL : 'data.csv';
     const favoritesUrl = 'Stock_Buy_Nov-25 (1).csv';
@@ -212,139 +227,134 @@ function App() {
   return (
     <Layout
       activeView={activeView}
-      onNavigate={(view) => {
-        setFundsPage(null);
-        setActiveView(view);
-      }}
+      onNavigate={onNavigate}
     >
       <Analytics />
-      {activeView === 'home' ? (
-        <LandingPage onNavigate={(view) => {
-          setFundsPage(null);
-          setActiveView(view);
-        }} />
-      ) : (
-      <div className="max-w-6xl mx-auto space-y-2 sm:space-y-3">
-        {/* Compact Hero Section */}
-        <div className="relative overflow-hidden bg-white/50 rounded-xl border border-slate-200/60 p-2 sm:p-3">
-          <div className="relative z-10 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Logo className="w-6 h-6 sm:w-8 sm:h-8" />
-              <div>
-                <h2 className="text-sm font-bold text-slate-900 leading-tight">
-                  Mutual Fund Insights
-                </h2>
-                <p className="text-[10px] text-slate-500 hidden sm:block">
-                  Track smart money moves, discover fresh buys/sells, and find portfolio overlaps.
-                </p>
+      
+      <Routes>
+        <Route path="/" element={<LandingPage onNavigate={onNavigate} />} />
+        
+        <Route path="/dashboard" element={
+          <div className="max-w-6xl mx-auto space-y-2 sm:space-y-3">
+            <Helmet>
+              <title>Insights | FinEye - Mutual Fund Smart Money Tracker</title>
+              <meta name="description" content="Track what mutual funds are buying and selling. Discover top held stocks and fresh institutional moves." />
+            </Helmet>
+            {/* Compact Hero Section */}
+            <div className="relative overflow-hidden bg-white/50 rounded-xl border border-slate-200/60 p-2 sm:p-3">
+              <div className="relative z-10 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <Logo className="w-6 h-6 sm:w-8 sm:h-8" />
+                  <div>
+                    <h2 className="text-sm font-bold text-slate-900 leading-tight">
+                      Mutual Fund Insights
+                    </h2>
+                    <p className="text-[10px] text-slate-500 hidden sm:block">
+                      Track smart money moves, discover fresh buys/sells, and find portfolio overlaps.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {!fundsPage && activeView === 'dashboard' && (
-          <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
-            <nav className="flex gap-1.5 min-w-max sm:min-w-0 sm:flex-nowrap" aria-label="Tabs">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      "group relative flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-all duration-200 whitespace-nowrap",
-                      isActive
-                        ? "bg-blue-600 text-white shadow-md shadow-blue-200"
-                        : "bg-white text-slate-500 hover:text-slate-900 border border-slate-200"
-                    )}
-                  >
-                    <Icon className={cn("w-3 h-3 transition-transform", isActive ? "scale-110" : "text-slate-400 group-hover:text-blue-600")} />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        )}
-
-        {/* Section Info Banner - Even More Compact */}
-        {activeView === 'dashboard' && !fundsPage && (
-          <div className="space-y-2">
-            <div className="bg-indigo-50/50 rounded-xl border border-indigo-100 p-2 sm:p-2.5 mx-1 sm:mx-0 flex items-center gap-3">
-              <div className="bg-white p-1.5 rounded-lg shrink-0 shadow-sm">
-                <Info className="w-3.5 h-3.5 text-indigo-600" />
+            {!fundsPage && (
+              <div className="overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+                <nav className="flex gap-1.5 min-w-max sm:min-w-0 sm:flex-nowrap" aria-label="Tabs">
+                  {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={cn(
+                          "group relative flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-all duration-200 whitespace-nowrap",
+                          isActive
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-200"
+                            : "bg-white text-slate-500 hover:text-slate-900 border border-slate-200"
+                        )}
+                      >
+                        <Icon className={cn("w-3 h-3 transition-transform", isActive ? "scale-110" : "text-slate-400 group-hover:text-blue-600")} />
+                        <span>{tab.label}</span>
+                      </button>
+                    );
+                  })}
+                </nav>
               </div>
-              <p className="text-[11px] sm:text-xs text-indigo-900/80 leading-tight">
-                <span className="font-bold text-indigo-900 mr-1">
-                  {activeTab === 'smart-money' && "Most Held Stocks:"}
-                  {activeTab === 'fresh-buy' && "Strongest Buying:"}
-                  {activeTab === 'top-sold' && "Top Selling:"}
-                </span>
-                {activeTab === 'smart-money' && "Stocks owned by the highest number of mutual funds."}
-                {activeTab === 'fresh-buy' && "Stocks where funds increased their holdings most this month."}
-                {activeTab === 'top-sold' && "Stocks where funds reduced their holdings most this month."}
-              </p>
-            </div>
-            
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50/80 border border-slate-200/60 rounded-lg mx-1 sm:mx-0">
-              <div className="w-1 h-1 rounded-full bg-slate-400 shrink-0" />
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium">
-                All insights are based on the most recent mutual fund portfolios and are updated after the 10th of each month, following official disclosures by fund houses.
-              </p>
+            )}
+
+            {/* Section Info Banner */}
+            {!fundsPage && (
+              <div className="space-y-2">
+                <div className="bg-indigo-50/50 rounded-xl border border-indigo-100 p-2 sm:p-2.5 mx-1 sm:mx-0 flex items-center gap-3">
+                  <div className="bg-white p-1.5 rounded-lg shrink-0 shadow-sm">
+                    <Info className="w-3.5 h-3.5 text-indigo-600" />
+                  </div>
+                  <p className="text-[11px] sm:text-xs text-indigo-900/80 leading-tight">
+                    <span className="font-bold text-indigo-900 mr-1">
+                      {activeTab === 'smart-money' && "Most Held Stocks:"}
+                      {activeTab === 'fresh-buy' && "Strongest Buying:"}
+                      {activeTab === 'top-sold' && "Top Selling:"}
+                    </span>
+                    {activeTab === 'smart-money' && "Stocks owned by the highest number of mutual funds."}
+                    {activeTab === 'fresh-buy' && "Stocks where funds increased their holdings most this month."}
+                    {activeTab === 'top-sold' && "Stocks where funds reduced their holdings most this month."}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="min-h-[400px]">
+              {!fundsPage && activeTab === 'smart-money' && (
+                loading ? (
+                  <div className="flex items-center justify-center py-20 text-slate-500 text-sm">Loading data…</div>
+                ) : error ? (
+                  <div className="flex items-center justify-center py-20 text-red-600 text-sm px-4 text-center">{error}</div>
+                ) : (
+                  <SmartMoneyView
+                    data={data}
+                    onOpenFundsPage={(stock, classifications) => setFundsPage({ stock, classifications })}
+                    onNavigate={onNavigate}
+                    monthLabel={monthLabel}
+                  />
+                )
+              )}
+              {!fundsPage && activeTab === 'fresh-buy' && (
+                <FavoriteStocksView monthLabel={monthLabel} initialData={favoritesData} />
+              )}
+              {!fundsPage && activeTab === 'top-sold' && (
+                <SoldStocksView monthLabel={monthLabel} initialData={sellsData} />
+              )}
+              {fundsPage && (
+                <>
+                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3 sm:p-4 mb-4 mx-1 sm:mx-0">
+                    <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                      Full list of funds holding this stock. Use search to jump to a fund, and browse pages for the rest.
+                    </p>
+                  </div>
+                  <FundsListPage
+                    stock={fundsPage.stock}
+                    classificationFilter={fundsPage.classifications}
+                    onBack={() => setFundsPage(null)}
+                    monthLabel={monthLabel}
+                  />
+                </>
+              )}
             </div>
           </div>
-        )}
+        } />
 
-        {/* Tab Content */}
-        <div className="min-h-[400px]">
-          {activeView === 'dashboard' && !fundsPage && activeTab === 'smart-money' && (
-            loading ? (
-              <div className="flex items-center justify-center py-20 text-slate-500 text-sm">Loading data…</div>
-            ) : error ? (
-              <div className="flex items-center justify-center py-20 text-red-600 text-sm px-4 text-center">{error}</div>
-            ) : (
-              <SmartMoneyView
-                data={data}
-                onOpenFundsPage={(stock, classifications) => setFundsPage({ stock, classifications })}
-                onNavigate={(view) => setActiveView(view)}
-                monthLabel={monthLabel}
-              />
-            )
-          )}
-          {activeView === 'dashboard' && !fundsPage && activeTab === 'fresh-buy' && (
-            <FavoriteStocksView monthLabel={monthLabel} initialData={favoritesData} />
-          )}
-          {activeView === 'dashboard' && !fundsPage && activeTab === 'top-sold' && (
-            <SoldStocksView monthLabel={monthLabel} initialData={sellsData} />
-          )}
-          {activeView === 'dashboard' && fundsPage && (
-            <>
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3 sm:p-4 mb-4 mx-1 sm:mx-0">
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  Full list of funds holding this stock. Use search to jump to a fund, and browse pages for the rest. Check classification and month to understand the context.
-                </p>
-              </div>
-              <FundsListPage
-                stock={fundsPage.stock}
-                classificationFilter={fundsPage.classifications}
-                onBack={() => setFundsPage(null)}
-                monthLabel={monthLabel}
-              />
-            </>
-          )}
-          {activeView === 'compare' && (
-            <FundCompareView data={data} />
-          )}
-          {activeView === 'learn' && (
-            <EducationView onNavigate={(view) => setActiveView(view)} />
-          )}
-          {['about', 'privacy', 'terms', 'disclaimer', 'contact'].includes(activeView) && (
-            <LegalContent type={activeView} />
-          )}
-        </div>
-      </div>
-      )}
+        <Route path="/compare" element={<FundCompareView data={data} />} />
+        <Route path="/learn" element={<EducationView onNavigate={onNavigate} />} />
+        
+        {/* Legal Routes */}
+        {['about', 'privacy', 'terms', 'disclaimer', 'contact'].map(type => (
+          <Route key={type} path={`/${type}`} element={<LegalContent type={type} />} />
+        ))}
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </Layout>
   );
 }
