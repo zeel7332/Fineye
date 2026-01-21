@@ -24,7 +24,7 @@ export function FavoriteStocksView({ monthLabel, initialData }) {
       return;
     }
 
-    const url = FAVORITES_CSV_URL && FAVORITES_CSV_URL.length > 0 ? FAVORITES_CSV_URL : 'Stock_Buy_Nov-25 (1).csv';
+    const url = FAVORITES_CSV_URL && FAVORITES_CSV_URL.length > 0 ? FAVORITES_CSV_URL : 'Stock_Buy_Dec-25.csv';
     fetchCsv(url)
       .then(data => {
         setRows(Array.isArray(data) ? data : []);
@@ -270,9 +270,9 @@ export function FavoriteStocksView({ monthLabel, initialData }) {
                           <Heart className="w-3 h-3" />
                         </span>
                         <span className="truncate">{row.stock_name}</span>
-                      </span>
-                    </td>
-                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm max-w-[80px] sm:max-w-none truncate" title={row.sector}>{row.sector || '—'}</td>
+                    </span>
+                  </td>
+                  <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm max-w-[80px] sm:max-w-none truncate" title={row.sector}>{row.sector || '—'}</td>
                     <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm max-w-[80px] sm:max-w-none truncate" title={row.classification}>{row.classification || '—'}</td>
                     <td className="hidden sm:table-cell px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm">{row.month || '—'}</td>
                     <td className="px-4 sm:px-6 py-2 sm:py-2.5 text-right whitespace-nowrap font-mono text-xs sm:text-sm text-slate-900">

@@ -25,6 +25,8 @@ export async function fetchCsv(url) {
     if (s === "approx. buy value(in rs. cr) *") return "approx_buy_value_cr";
     if (s === "net qty sold") return "net_qty_sold";
     if (s === "approx. sell value(in rs. cr) *") return "approx_sell_value_cr";
+    if (s === "company_name") return "company_name";
+    if (s === "ticker") return "ticker";
     return s;
   };
   const parseWith = (delimiter) =>
@@ -176,6 +178,8 @@ export async function fetchCsv(url) {
       sector: header.findIndex((h) => normalizeHeader(h) === "sector"),
       net_qty_bought: header.findIndex((h) => normalizeHeader(h) === "net_qty_bought"),
       approx_buy_value_cr: header.findIndex((h) => normalizeHeader(h) === "approx_buy_value_cr"),
+      company_name: header.findIndex((h) => normalizeHeader(h) === "company_name"),
+      ticker: header.findIndex((h) => normalizeHeader(h) === "ticker"),
     };
     const rows = lines.slice(1).map((l) => splitBy(l, detectDelim(l)));
     const out = rows
@@ -187,6 +191,8 @@ export async function fetchCsv(url) {
         const pa = clean(r[idx.percent_aum]).replace(/%/g, "");
         const percent_aum = parseFloat(pa) || null;
         const sector = clean(r[idx.sector]);
+        const company_name = clean(r[idx.company_name]);
+        const ticker = clean(r[idx.ticker]);
         const parseNum = (x) => {
           const cleaned = (x || "").replace(/[,\s]/g, "").replace(/[^\d.-]/g, "");
           const num = parseFloat(cleaned);
@@ -194,7 +200,7 @@ export async function fetchCsv(url) {
         };
         const net_qty_bought = parseNum(clean(r[idx.net_qty_bought]));
         const approx_buy_value_cr = parseNum(clean(r[idx.approx_buy_value_cr]));
-        return { fund_name, classification, month, stock_name, percent_aum, sector, net_qty_bought, approx_buy_value_cr };
+        return { fund_name, classification, month, stock_name, percent_aum, sector, net_qty_bought, approx_buy_value_cr, company_name, ticker };
       })
       .filter((row) => row.stock_name && row.fund_name);
     if (out.length > 0) return out;

@@ -12,7 +12,17 @@ export function Dashboard({ data }) {
   const itemsPerPage = 10;
 
   // Identify columns dynamically
-  const columns = data.length > 0 ? Object.keys(data[0]) : [];
+  const columns = data.length > 0 ? [
+    'fund_name',
+    'classification',
+    'month',
+    'stock_name',
+    'ticker',
+    'sector',
+    'percent_aum',
+    'net_qty_bought',
+    'approx_buy_value_cr'
+  ].filter(key => data[0].hasOwnProperty(key)) : [];
   
   // Get unique values for filters
   const sectors = [...new Set(data.map(item => item.sector).filter(Boolean))].sort();
@@ -263,7 +273,7 @@ export function Dashboard({ data }) {
           <table className="w-full text-left text-xs sm:text-sm text-slate-600">
             <thead className="bg-slate-50 text-slate-900 font-semibold border-b border-slate-200">
               <tr>
-                {columns.slice(0, 8).map((key) => (
+                {columns.map((key) => (
                   <th key={key} className="px-4 sm:px-6 py-3 sm:py-4 capitalize whitespace-nowrap">{key.replace(/_/g, ' ')}</th>
                 ))}
               </tr>
@@ -272,7 +282,7 @@ export function Dashboard({ data }) {
               {paginatedData.length > 0 ? (
                 paginatedData.map((row, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/50">
-                     {columns.slice(0, 8).map((key, i) => (
+                     {columns.map((key, i) => (
                       <td key={i} className="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap max-w-[150px] sm:max-w-xs truncate" title={row[key]}>{row[key]}</td>
                      ))}
                   </tr>

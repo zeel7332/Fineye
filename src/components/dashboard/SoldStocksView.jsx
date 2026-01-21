@@ -24,7 +24,7 @@ export function SoldStocksView({ monthLabel, initialData }) {
       return;
     }
 
-    const url = SELLS_CSV_URL && SELLS_CSV_URL.length > 0 ? SELLS_CSV_URL : 'Stock_Sell_Nov-25.csv';
+    const url = SELLS_CSV_URL && SELLS_CSV_URL.length > 0 ? SELLS_CSV_URL : 'Stock_Sell_Dec-25.csv';
     fetchCsv(url)
       .then(data => {
         setRows(Array.isArray(data) ? data : []);
@@ -250,6 +250,7 @@ export function SoldStocksView({ monthLabel, initialData }) {
             <thead className="bg-slate-50 text-slate-900 font-semibold border-b border-slate-200">
               <tr>
                 <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap sticky left-0 bg-slate-50 z-10 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.1)] max-w-[120px] sm:max-w-none">Stock Name</th>
+                <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Ticker</th>
                 <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap max-w-[80px] sm:max-w-none truncate">Sector</th>
                 <th className="px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap max-w-[80px] sm:max-w-none truncate">Classification</th>
                 <th className="hidden sm:table-cell px-4 sm:px-6 py-2.5 text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Month</th>
@@ -270,9 +271,9 @@ export function SoldStocksView({ monthLabel, initialData }) {
                           <TrendingDown className="w-3 h-3" />
                         </span>
                         <span className="truncate">{row.stock_name}</span>
-                      </span>
-                    </td>
-                    <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm max-w-[80px] sm:max-w-none truncate" title={row.sector}>{row.sector || '—'}</td>
+                    </span>
+                  </td>
+                  <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm max-w-[80px] sm:max-w-none truncate" title={row.sector}>{row.sector || '—'}</td>
                     <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm max-w-[80px] sm:max-w-none truncate" title={row.classification}>{row.classification || '—'}</td>
                     <td className="hidden sm:table-cell px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-xs sm:text-sm">{row.month || '—'}</td>
                     <td className="px-4 sm:px-6 py-2 sm:py-2.5 whitespace-nowrap text-right font-mono text-xs sm:text-sm text-slate-900">

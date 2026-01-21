@@ -12,7 +12,7 @@ import { LegalContent } from './components/dashboard/LegalContent';
 import { LandingPage } from './components/dashboard/LandingPage';
 import { cn } from './lib/utils';
 import { fetchCsv } from './lib/fetchCsv';
-import { DATA_CSV_URL } from './config';
+import { DATA_CSV_URL, FAVORITES_CSV_URL, SELLS_CSV_URL } from './config';
 import { Logo } from './components/common/Logo';
 import { TrendingUp, Scale, Wallet, Heart, TrendingDown, Info } from 'lucide-react';
 
@@ -179,8 +179,8 @@ function App() {
   };
   useEffect(() => {
     const dataUrl = DATA_CSV_URL && DATA_CSV_URL.length > 0 ? DATA_CSV_URL : 'data.csv';
-    const favoritesUrl = 'Stock_Buy_Nov-25 (1).csv';
-    const sellsUrl = 'Stock_Sell_Nov-25.csv';
+    const favoritesUrl = FAVORITES_CSV_URL && FAVORITES_CSV_URL.length > 0 ? FAVORITES_CSV_URL : 'Stock_Buy_Dec-25.csv';
+    const sellsUrl = SELLS_CSV_URL && SELLS_CSV_URL.length > 0 ? SELLS_CSV_URL : 'Stock_Sell_Dec-25.csv';
 
     setLoading(true);
     

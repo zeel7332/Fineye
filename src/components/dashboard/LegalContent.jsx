@@ -6,7 +6,7 @@ export function LegalContent({ type }) {
     about: {
       title: 'About FinEye',
       icon: Info,
-      lastUpdated: 'December 31, 2025',
+      lastUpdated: 'January 21, 2026',
       sections: [
         {
           heading: 'Our Mission',
@@ -25,7 +25,7 @@ export function LegalContent({ type }) {
     privacy: {
       title: 'Privacy Policy',
       icon: Shield,
-      lastUpdated: 'December 30, 2025',
+      lastUpdated: 'January 21, 2026',
       sections: [
         {
           heading: 'Data Collection',
@@ -44,7 +44,7 @@ export function LegalContent({ type }) {
     terms: {
       title: 'Terms & Conditions',
       icon: Scale,
-      lastUpdated: 'December 30, 2025',
+      lastUpdated: 'January 21, 2026',
       sections: [
         {
           heading: 'Usage of Service',
@@ -63,7 +63,7 @@ export function LegalContent({ type }) {
     disclaimer: {
       title: 'Disclaimer',
       icon: AlertTriangle,
-      lastUpdated: 'December 30, 2025',
+      lastUpdated: 'January 21, 2026',
       sections: [
         {
           heading: 'Educational Purpose Only',
@@ -82,7 +82,7 @@ export function LegalContent({ type }) {
     contact: {
       title: 'Contact Us',
       icon: MessageSquare,
-      lastUpdated: 'December 30, 2025',
+      lastUpdated: 'January 21, 2026',
       sections: [
         {
           heading: 'Get in Touch',
