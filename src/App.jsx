@@ -254,6 +254,12 @@ function App() {
                     </p>
                   </div>
                 </div>
+                {!!monthLabel && (
+                  <div className="flex flex-col items-end">
+                    <span className="text-[9px] uppercase font-bold text-slate-400">Latest Data</span>
+                    <span className="text-[11px] sm:text-xs font-bold text-primary">{monthLabel}</span>
+                  </div>
+                )}
               </div>
             </div>
 

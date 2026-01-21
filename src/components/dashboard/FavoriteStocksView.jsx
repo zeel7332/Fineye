@@ -103,7 +103,7 @@ export function FavoriteStocksView({ monthLabel, initialData }) {
       <div className="sm:hidden flex items-center justify-between px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg mx-1">
         <div className="flex flex-col">
           <span className="text-[10px] uppercase font-bold text-slate-400">Month</span>
-          <span className="text-xs font-semibold text-slate-700">{monthLabel || 'Nov 2025'}</span>
+          <span className="text-xs font-semibold text-slate-700">{monthLabel || 'Dec 2025'}</span>
         </div>
         <div className="flex flex-col text-right">
           <span className="text-[10px] uppercase font-bold text-slate-400 text-right">Unit Scale</span>

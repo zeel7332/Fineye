@@ -99,6 +99,18 @@ export function SmartMoneyView({ data, onOpenFundsPage, onNavigate, monthLabel }
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Month & Summary Banner for Mobile */}
+      <div className="sm:hidden flex items-center justify-between px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg mx-1">
+        <div className="flex flex-col">
+          <span className="text-[10px] uppercase font-bold text-slate-400">Month</span>
+          <span className="text-xs font-semibold text-slate-700">{monthLabel || 'Dec 2025'}</span>
+        </div>
+        <div className="flex flex-col text-right">
+          <span className="text-[10px] uppercase font-bold text-slate-400 text-right">Unit Scale</span>
+          <span className="text-xs font-semibold text-slate-700">Stock Count</span>
+        </div>
+      </div>
+
       {/* Educational CTA Banner */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-4 sm:p-5 text-white shadow-lg shadow-blue-200/50 mx-1 sm:mx-0">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -250,9 +262,15 @@ export function SmartMoneyView({ data, onOpenFundsPage, onNavigate, monthLabel }
       </div>
 
       {/* Info Banner for Mobile Interaction */}
-      <div className="sm:hidden bg-blue-50/50 border border-blue-100/50 rounded-lg p-2 mx-1 flex items-center gap-2">
-        <div className="bg-blue-600 w-1 h-4 rounded-full" />
-        <p className="text-[10px] text-blue-800 font-medium">Tap on any stock to view detailed mutual fund holdings.</p>
+      <div className="bg-blue-50/50 border border-blue-100/50 rounded-lg p-2 mx-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <div className="bg-blue-600 w-1 h-4 rounded-full" />
+          <p className="text-[10px] text-blue-800 font-medium">Tap on any stock to view detailed mutual fund holdings.</p>
+        </div>
+        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-100/50 rounded-md">
+          <span className="text-[9px] uppercase font-bold text-blue-600/70">Data as of</span>
+          <span className="text-[10px] font-bold text-blue-700">{monthLabel || 'Dec 2025'}</span>
+        </div>
       </div>
 
       {/* Stock List Content */}
