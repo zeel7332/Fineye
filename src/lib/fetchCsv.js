@@ -178,6 +178,8 @@ export async function fetchCsv(url) {
       sector: header.findIndex((h) => normalizeHeader(h) === "sector"),
       net_qty_bought: header.findIndex((h) => normalizeHeader(h) === "net_qty_bought"),
       approx_buy_value_cr: header.findIndex((h) => normalizeHeader(h) === "approx_buy_value_cr"),
+      net_qty_sold: header.findIndex((h) => normalizeHeader(h) === "net_qty_sold"),
+      approx_sell_value_cr: header.findIndex((h) => normalizeHeader(h) === "approx_sell_value_cr"),
       company_name: header.findIndex((h) => normalizeHeader(h) === "company_name"),
       ticker: header.findIndex((h) => normalizeHeader(h) === "ticker"),
     };
@@ -200,9 +202,11 @@ export async function fetchCsv(url) {
         };
         const net_qty_bought = parseNum(clean(r[idx.net_qty_bought]));
         const approx_buy_value_cr = parseNum(clean(r[idx.approx_buy_value_cr]));
-        return { fund_name, classification, month, stock_name, percent_aum, sector, net_qty_bought, approx_buy_value_cr, company_name, ticker };
+        const net_qty_sold = parseNum(clean(r[idx.net_qty_sold]));
+        const approx_sell_value_cr = parseNum(clean(r[idx.approx_sell_value_cr]));
+        return { fund_name, classification, month, stock_name, percent_aum, sector, net_qty_bought, approx_buy_value_cr, net_qty_sold, approx_sell_value_cr, company_name, ticker };
       })
-      .filter((row) => row.stock_name && row.fund_name);
+      .filter((row) => row.stock_name && (row.fund_name || row.net_qty_bought || row.net_qty_sold));
     if (out.length > 0) return out;
   }
   return [];
