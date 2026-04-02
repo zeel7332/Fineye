@@ -1,211 +1,160 @@
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import { ArrowRight, TrendingUp, BarChart3, PieChart, Shield, Check, Scale, Compass } from 'lucide-react';
+import { ArrowRight, Check, X as XIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export function LandingPage({ onNavigate }) {
   return (
-    <div className="space-y-4 sm:space-y-8 py-4 sm:py-6">
-      <Helmet>
-        <title>FinEye - Smart Mutual Fund Insights for Indian Investors</title>
-        <meta name="description" content="Track mutual fund smart money moves, analyze portfolio overlaps, and discover institutional buying/selling trends in the Indian market." />
-        <meta property="og:title" content="FinEye - Smart Mutual Fund Insights" />
-        <meta property="og:description" content="Stop guessing. Track what India's top mutual funds are buying and selling in real-time." />
-      </Helmet>
-      
-      {/* 1. Hero Content */}
-      <section className="text-center space-y-2 sm:space-y-4 max-w-4xl mx-auto px-4">
-        <div className="space-y-2 sm:space-y-3">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
-            See Where <br className="hidden sm:block" />
-            <span className="text-primary">Mutual Funds</span> Are Investing
-          </h1>
-          <p className="text-sm sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Track what Indian mutual funds are buying, selling, and holding — based on their latest monthly portfolio disclosures.
-          </p>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 pt-1 sm:pt-2">
-          <button 
-            onClick={() => onNavigate('dashboard')}
-            className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 bg-primary text-white rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2 group"
-          >
-            View Mutual Fund Insights
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-          </button>
-          <button 
-            onClick={() => onNavigate('compare')}
-            className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-slate-700 border border-slate-200 rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm flex items-center justify-center gap-2"
-          >
-            Compare Funds
-          </button>
-        </div>
-      </section>
+    <div className="space-y-0 sm:space-y-0">
+      <style>{`
+        @keyframes tickerSlide {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
 
-      {/* 2. Interactive Hero Cards (2-column layout) */}
-      <section className="grid md:grid-cols-2 gap-3 sm:gap-4 max-w-5xl mx-auto px-4">
-        
-        {/* A) Market Insights Card */}
-        <div 
-          onClick={() => onNavigate('dashboard')}
-          className="group relative bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-primary/30 transition-all duration-300 cursor-pointer overflow-hidden"
-        >
-          <div className="relative space-y-3 sm:space-y-4">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 sm:w-11 sm:h-11 bg-blue-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shrink-0">
-                  <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                </div>
-                <h2 className="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-primary transition-colors">Mutual Fund Insights</h2>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-600">Discover what mutual funds are buying and selling right now.</p>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Perfect for you if you want to:</p>
-              <ul className="space-y-1 sm:space-y-1.5">
-                {[
-                  "Understand which stocks are most favored",
-                  "See stocks newly added by mutual funds",
-                  "See where funds are selling holdings",
-                  "Identify stocks held by many funds"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs sm:text-sm text-slate-700">
-                    <Check className="w-3.5 h-3.5 text-green-500 mt-0.5 shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="pt-1.5 sm:pt-2 border-t border-slate-100">
-              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1 sm:mb-1.5">What you'll see:</p>
-              <div className="flex flex-wrap gap-1 sm:gap-1.5">
-                {["Highest Funded Stocks", "Fresh Buying", "Recent Selling", "Fund Holdings"].map((tag, i) => (
-                  <span key={i} className="px-1.5 sm:px-2 py-0.5 bg-slate-50 text-slate-600 text-[9px] sm:text-[10px] font-medium rounded-md border border-slate-100">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-            
-            <div className="pt-0.5 flex items-center text-primary font-bold text-[11px] sm:text-xs group-hover:translate-x-1 transition-transform">
-              View Mutual Fund Insights <ArrowRight className="w-3.5 h-3.5 ml-1" />
-            </div>
-          </div>
-        </div>
-
-        {/* B) Fund Compare Card */}
-        <div 
-          onClick={() => onNavigate('compare')}
-          className="group relative bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-purple-500/30 transition-all duration-300 cursor-pointer overflow-hidden"
-        >
-          <div className="relative space-y-3 sm:space-y-4">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 sm:w-11 sm:h-11 bg-purple-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shrink-0">
-                  <Scale className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
-                </div>
-                <h2 className="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-purple-600 transition-colors">Fund Compare</h2>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-600">Compare mutual fund portfolios to avoid owning the same stocks across multiple funds.</p>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Perfect for you if you want to:</p>
-              <ul className="space-y-1 sm:space-y-1.5">
-                {[
-                  "Compare funds to find unique value",
-                  "Check portfolio overlap & avoid duplication",
-                  "Understand concentration risk",
-                  "Get smart recommendations"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs sm:text-sm text-slate-700">
-                    <Check className="w-3.5 h-3.5 text-purple-500 mt-0.5 shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="pt-1.5 sm:pt-2 border-t border-slate-100">
-              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1 sm:mb-1.5">What you'll see:</p>
-              <div className="flex flex-wrap gap-1 sm:gap-1.5">
-                {["Portfolio Overlap %", "Common Stocks", "Unique Holdings", "Sector Breakdown"].map((tag, i) => (
-                  <span key={i} className="px-1.5 sm:px-2 py-0.5 bg-slate-50 text-slate-600 text-[9px] sm:text-[10px] font-medium rounded-md border border-slate-100">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-0.5 flex items-center text-purple-600 font-bold text-[11px] sm:text-xs group-hover:translate-x-1 transition-transform">
-              Start Comparing <ArrowRight className="w-3.5 h-3.5 ml-1" />
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-      {/* 3. Value Proposition Section */}
-      <section className="bg-white border-y border-slate-100 py-4 sm:py-8">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-6 sm:gap-8">
+      <div className="w-full border-b border-indigo-100 bg-indigo-50/60">
+        <div className="max-w-7xl mx-auto overflow-hidden">
+          <div className="whitespace-nowrap flex items-center text-[12px] sm:text-[12px] text-indigo-900 py-2 sm:py-2.5 gap-8 sm:gap-12"
+               style={{ animation: 'tickerSlide 40s linear infinite' }}>
             {[
-              { 
-                icon: BarChart3, 
-                title: "Latest Mutual Fund Data", 
-                desc: "Updated monthly from official AMC disclosures.",
-                color: "text-blue-600",
-                bg: "bg-blue-50"
-              },
-              { 
-                icon: Compass, 
-                title: "Smart Insights", 
-                desc: "Decode complex market moves instantly.",
-                color: "text-indigo-600",
-                bg: "bg-indigo-50"
-              },
-              { 
-                icon: TrendingUp, 
-                title: "Better Returns", 
-                desc: "Align your portfolio with smart money.",
-                color: "text-green-600",
-                bg: "bg-green-50"
-              },
-              { 
-                icon: Shield, 
-                title: "Easy Navigation", 
-                desc: "Simple tools for complex analysis.",
-                color: "text-orange-600",
-                bg: "bg-orange-50"
-              }
-            ].map((item, i) => (
-              <div key={i} className="text-center space-y-1.5 sm:space-y-2 group">
-                <div className={cn("w-10 h-10 sm:w-12 sm:h-12 mx-auto rounded-lg sm:rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110", item.bg)}>
-                  <item.icon className={cn("w-5 h-5 sm:w-6 sm:h-6", item.color)} />
-                </div>
-                <h3 className="font-bold text-xs sm:text-sm text-slate-900">{item.title}</h3>
-                <p className="text-[10px] sm:text-xs text-slate-500 leading-tight max-w-[140px] sm:max-w-[180px] mx-auto">{item.desc}</p>
+              { text: '398 funds hold HDFC Bank this month', badge: '↑ Most held', tone: 'indigo' },
+              { text: 'HDFC Bank Ltd. — freshly bought by 7.88 Cr shares', badge: '↑ New entry', tone: 'green' },
+              { text: 'Infosys Ltd. added by funds worth ₹5,877 Cr', badge: '↑ Trending', tone: 'green' },
+              { text: 'ICICI Bank Ltd. — 4.02 Cr shares added this month', badge: '↑ Strong buy', tone: 'green' },
+              { text: 'Data updated from Feb 2026 SEBI disclosures', badge: '', tone: 'indigo' },
+              { text: 'State Bank Of India — fresh sell signal, 7.75 Cr shares', badge: '↓ Selling', tone: 'red' },
+            ].concat([
+              { text: '398 funds hold HDFC Bank this month', badge: '↑ Most held', tone: 'indigo' },
+              { text: 'HDFC Bank Ltd. — freshly bought by 7.88 Cr shares', badge: '↑ New entry', tone: 'green' },
+              { text: 'Infosys Ltd. added by funds worth ₹5,877 Cr', badge: '↑ Trending', tone: 'green' },
+              { text: 'ICICI Bank Ltd. — 4.02 Cr shares added this month', badge: '↑ Strong buy', tone: 'green' },
+              { text: 'Data updated from Feb 2026 SEBI disclosures', badge: '', tone: 'indigo' },
+              { text: 'State Bank Of India — fresh sell signal, 7.75 Cr shares', badge: '↓ Selling', tone: 'red' },
+            ]).map((item, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="text-indigo-900">{item.text}</span>
+                {item.badge && (
+                  <span className={cn(
+                    "text-[11px] font-bold px-1.5 py-0.5 rounded-md",
+                    item.tone === 'green' ? "bg-green-50 text-green-700" : "bg-indigo-100 text-indigo-700"
+                  )}>{item.badge}</span>
+                )}
               </div>
             ))}
           </div>
         </div>
-      </section>
-
-      {/* SEO Keywords (Subtle Footer) */}
-      <div className="py-6 border-t border-slate-100 mt-auto flex flex-col items-center gap-4">
-        <p className="text-[10px] text-slate-300 flex flex-wrap justify-center gap-x-4 gap-y-2 text-center px-4">
-          <span>Indian mutual funds</span>
-          <span className="w-1 h-1 rounded-full bg-slate-200 my-auto" />
-          <span>Mutual fund portfolio holdings</span>
-          <span className="w-1 h-1 rounded-full bg-slate-200 my-auto" />
-          <span>Mutual fund overlap</span>
-          <span className="w-1 h-1 rounded-full bg-slate-200 my-auto" />
-          <span>Fund buying and selling data</span>
-        </p>
       </div>
 
+      <section className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-6 sm:pb-6 text-center overflow-x-hidden">
+        <div className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-semibold bg-indigo-50 text-indigo-800 border border-indigo-100 rounded-full px-2.5 py-1">
+          <span>For first-time investors</span>
+          <span className="w-1 h-1 rounded-full bg-indigo-300" />
+          <span>100% free</span>
+        </div>
+        <h1 className="mt-2 text-slate-900 font-semibold leading-tight break-words"
+            style={{ fontSize: 'clamp(28px, 8vw, 52px)' }}>
+          <span className="block">Investing feels confusing.</span>
+          <span className="block"><span className="text-indigo-700 italic">We make it easy</span> to understand.</span>
+        </h1>
+        <p className="mt-3 text-[14px] sm:text-[16px] text-slate-600 leading-[1.6] max-w-[520px] mx-auto px-2">
+          Choose stocks and mutual funds based on information in easy‑to‑understand language.
+          No ratios. No complicated charts. Just simple insights from real portfolios.
+        </p>
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:gap-5 text-[11px] sm:text-[13px] font-medium text-slate-700">
+          <div className="flex items-center gap-1.5 justify-center">
+            <span className="inline-flex items-center justify-center w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] rounded-full bg-[#FEE2E2] border border-red-200 shrink-0">
+              <XIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-700" />
+            </span>
+            <span className="whitespace-nowrap">No PE ratios</span>
+          </div>
+          <span className="hidden sm:block w-px h-4 bg-slate-200" />
+          <div className="flex items-center gap-1.5 justify-center">
+            <span className="inline-flex items-center justify-center w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] rounded-full bg-[#FEE2E2] border border-red-200 shrink-0">
+              <XIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-700" />
+            </span>
+            <span className="whitespace-nowrap">No balance sheets</span>
+          </div>
+          <span className="hidden sm:block w-px h-4 bg-slate-200" />
+          <div className="flex items-center gap-1.5 justify-center">
+            <span className="inline-flex items-center justify-center w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] rounded-full bg-[#FEE2E2] border border-red-200 shrink-0">
+              <XIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-700" />
+            </span>
+            <span className="whitespace-nowrap">No overwhelming charts</span>
+          </div>
+          <span className="hidden sm:block w-px h-4 bg-slate-200" />
+          <div className="flex items-center gap-1.5 justify-center">
+            <span className="inline-flex items-center justify-center w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] rounded-full bg-[#FEE2E2] border border-red-200 shrink-0">
+              <XIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-700" />
+            </span>
+            <span className="whitespace-nowrap">No finance degree needed</span>
+          </div>
+        </div>
+        <p className="mt-2.5 text-[11px] sm:text-[13px] text-slate-500 px-4">
+          Used by students, first jobbers, and anyone who’s ever Googled <span className="text-green-600 font-medium">“what is PE ratio”</span>
+        </p>
+
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 px-2">
+          <button
+            onClick={() => onNavigate('dashboard')}
+            className="group relative bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-300 cursor-pointer w-full"
+          >
+            <div className="absolute inset-x-0 top-0 h-[2.5px] rounded-t-2xl bg-indigo-600" />
+            <div className="h-full flex flex-col items-center text-center">
+                <div className="text-[18px] sm:text-[22px] leading-tight font-semibold text-slate-900 min-h-[28px] flex items-center">Explore Stocks</div>
+                <p className="mt-2 text-[13px] text-slate-600 leading-[1.55] max-w-[320px] min-h-[58px]">
+                  See which stocks experienced investors are buying this month — explained in plain language, no finance knowledge needed.
+                </p>
+                <div className="pt-3 w-full sm:w-auto">
+                  <div className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 text-white text-[14px] font-semibold shadow-sm w-full sm:w-auto hover:bg-indigo-700 transition-colors">
+                    Start exploring <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onNavigate('compare')}
+            className="group relative bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-300 cursor-pointer w-full"
+          >
+            <div className="absolute inset-x-0 top-0 h-[2.5px] rounded-t-2xl bg-teal-600" />
+            <div className="h-full flex flex-col items-center text-center">
+                <div className="text-[18px] sm:text-[22px] leading-tight font-semibold text-slate-900 min-h-[28px] flex items-center">Pick a Mutual Fund</div>
+                <p className="mt-2 text-[13px] text-slate-600 leading-[1.55] max-w-[320px] min-h-[58px]">
+                  Not sure which mutual fund to choose? Find the right one for you, check if your funds overlap, and invest with confidence.
+                </p>
+                <div className="pt-3 w-full sm:w-auto">
+                  <div className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-teal-600 text-white text-[14px] font-semibold shadow-sm w-full sm:w-auto hover:bg-teal-700 transition-colors">
+                    Find my fund <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+            </div>
+          </button>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[11px] sm:text-[12px] text-slate-600 px-4">
+          <div className="flex items-center gap-1.5">
+            <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 shrink-0" />
+            <span>Real data from SEBI</span>
+          </div>
+          <span className="hidden sm:block w-px h-3.5 bg-slate-200" />
+          <div className="flex items-center gap-1.5">
+            <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 shrink-0" />
+            <span>Updated every month</span>
+          </div>
+          <span className="hidden sm:block w-px h-3.5 bg-slate-200" />
+          <div className="flex items-center gap-1.5">
+            <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 shrink-0" />
+            <span>Always free</span>
+          </div>
+          <span className="hidden sm:block w-px h-3.5 bg-slate-200" />
+          <div className="flex items-center gap-1.5">
+            <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 shrink-0" />
+            <span>Zero jargon</span>
+          </div>
+        </div>
+      </section>
+
+      
     </div>
   );
 }

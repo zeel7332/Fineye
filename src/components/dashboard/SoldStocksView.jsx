@@ -24,7 +24,7 @@ export function SoldStocksView({ monthLabel, initialData }) {
       return;
     }
 
-    const url = SELLS_CSV_URL && SELLS_CSV_URL.length > 0 ? SELLS_CSV_URL : 'Stock_Sell_Dec-25.csv';
+    const url = SELLS_CSV_URL && SELLS_CSV_URL.length > 0 ? SELLS_CSV_URL : 'Stock_Sell_Feb-26.csv';
     fetchCsv(url)
       .then(data => {
         setRows(Array.isArray(data) ? data : []);
@@ -103,7 +103,7 @@ export function SoldStocksView({ monthLabel, initialData }) {
       <div className="sm:hidden flex items-center justify-between px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg mx-1">
         <div className="flex flex-col">
           <span className="text-[10px] uppercase font-bold text-slate-400">Month</span>
-          <span className="text-xs font-semibold text-slate-700">{monthLabel || 'Dec 2025'}</span>
+          <span className="text-xs font-semibold text-slate-700">{monthLabel || 'Feb 2026'}</span>
         </div>
         <div className="flex flex-col text-right">
           <span className="text-[10px] uppercase font-bold text-slate-400 text-right">Unit Scale</span>

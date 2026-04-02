@@ -43,12 +43,12 @@ export function SmartMoneyView({ data, onOpenFundsPage, onNavigate, monthLabel }
     });
 
     // Convert to array and sort by fundCount (descending)
-    return Array.from(groups.values()).sort(
-      (a, b) =>
-        new Set(b.funds.map(f => f.fund_name)).size -
-        new Set(a.funds.map(f => f.fund_name)).size
-    );
+    return Array.from(groups.values()).map(stock => ({
+      ...stock,
+      fundCount: new Set(stock.funds.map(f => f.fund_name)).size
+    })).sort((a, b) => b.fundCount - a.fundCount);
   }, [data]);
+
   const classifications = useMemo(() => {
     return Array.from(new Set((data || []).map(r => (r.classification || '').trim()).filter(Boolean))).sort();
   }, [data]);
@@ -61,29 +61,33 @@ export function SmartMoneyView({ data, onOpenFundsPage, onNavigate, monthLabel }
     const isFiltering = Boolean(searchTerm.trim()) || (selectedCategories.length > 0) || (selectedSectors.length > 0);
     const base = isFiltering ? groupedData : groupedData.slice(0, itemsPerPage * maxPages);
     
-    const bySearch = searchTerm
+    let result = searchTerm
       ? base.filter(stock => 
           stock.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
           (stock.ticker && stock.ticker.toLowerCase().includes(searchTerm.toLowerCase()))
         )
       : base;
     
-    const byClass = selectedCategories.length > 0
-      ? bySearch.filter(stock => stock.funds.some(f => selectedCategories.includes((f.classification || '').trim())))
-      : bySearch;
+    if (selectedCategories.length > 0) {
+      result = result.filter(stock => 
+        stock.funds.some(f => selectedCategories.includes((f.classification || '').trim()))
+      );
+    }
 
-    const bySector = selectedSectors.length > 0
-      ? byClass.filter(stock => selectedSectors.includes((stock.sector || '').trim()))
-      : byClass;
+    if (selectedSectors.length > 0) {
+      result = result.filter(stock => selectedSectors.includes((stock.sector || '').trim()));
+    }
 
-    const countFor = (stock) => {
-      let funds = stock.funds;
-      if (selectedCategories.length > 0) {
-        funds = funds.filter(f => selectedCategories.includes((f.classification || '').trim()));
-      }
-      return new Set(funds.map(f => f.fund_name)).size;
-    };
-    return [...bySector].sort((a, b) => countFor(b) - countFor(a));
+    // If filtering, we need to recalculate fund count based on filters
+    if (selectedCategories.length > 0) {
+      return [...result].sort((a, b) => {
+        const countA = new Set(a.funds.filter(f => selectedCategories.includes((f.classification || '').trim())).map(f => f.fund_name)).size;
+        const countB = new Set(b.funds.filter(f => selectedCategories.includes((f.classification || '').trim())).map(f => f.fund_name)).size;
+        return countB - countA;
+      });
+    }
+
+    return result;
   }, [groupedData, searchTerm, selectedCategories, selectedSectors]);
 
   const totalPages = (() => {
@@ -97,13 +101,20 @@ export function SmartMoneyView({ data, onOpenFundsPage, onNavigate, monthLabel }
     setExpandedStock(expandedStock === stockName ? null : stockName);
   };
 
+  const getStockFundCount = (stock) => {
+    if (selectedCategories.length > 0) {
+      return new Set(stock.funds.filter(f => selectedCategories.includes((f.classification || '').trim())).map(f => f.fund_name)).size;
+    }
+    return stock.fundCount;
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Month & Summary Banner for Mobile */}
       <div className="sm:hidden flex items-center justify-between px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg mx-1">
         <div className="flex flex-col">
           <span className="text-[10px] uppercase font-bold text-slate-400">Month</span>
-          <span className="text-xs font-semibold text-slate-700">{monthLabel || 'Dec 2025'}</span>
+          <span className="text-xs font-semibold text-slate-700">{monthLabel || 'Feb 2026'}</span>
         </div>
         <div className="flex flex-col text-right">
           <span className="text-[10px] uppercase font-bold text-slate-400 text-right">Unit Scale</span>
@@ -269,7 +280,7 @@ export function SmartMoneyView({ data, onOpenFundsPage, onNavigate, monthLabel }
         </div>
         <div className="flex items-center gap-1.5 px-2 py-0.5 bg-blue-100/50 rounded-md">
           <span className="text-[9px] uppercase font-bold text-blue-600/70">Data as of</span>
-          <span className="text-[10px] font-bold text-blue-700">{monthLabel || 'Dec 2025'}</span>
+          <span className="text-[10px] font-bold text-blue-700">{monthLabel || 'Feb 2026'}</span>
         </div>
       </div>
 
@@ -306,11 +317,7 @@ export function SmartMoneyView({ data, onOpenFundsPage, onNavigate, monthLabel }
                       </div>
                       <div className="col-span-2 text-center">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
-                          {new Set(
-                            stock.funds
-                              .filter(f => selectedCategories.length === 0 || selectedCategories.includes((f.classification || '').trim()))
-                              .map(f => f.fund_name)
-                          ).size}
+                          {getStockFundCount(stock)}
                         </span>
                       </div>
                       <div className="col-span-2 text-right">

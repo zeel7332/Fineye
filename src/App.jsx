@@ -179,17 +179,27 @@ function App() {
   };
   useEffect(() => {
     const dataUrl = DATA_CSV_URL && DATA_CSV_URL.length > 0 ? DATA_CSV_URL : 'data.csv';
-    const favoritesUrl = FAVORITES_CSV_URL && FAVORITES_CSV_URL.length > 0 ? FAVORITES_CSV_URL : 'Stock_Buy_Dec-25.csv';
-    const sellsUrl = SELLS_CSV_URL && SELLS_CSV_URL.length > 0 ? SELLS_CSV_URL : 'Stock_Sell_Dec-25.csv';
+    const favoritesUrl = FAVORITES_CSV_URL && FAVORITES_CSV_URL.length > 0 ? FAVORITES_CSV_URL : 'Stock_Buy_Feb-26.csv';
+    const sellsUrl = SELLS_CSV_URL && SELLS_CSV_URL.length > 0 ? SELLS_CSV_URL : 'Stock_Sell_Feb-26.csv';
 
     setLoading(true);
     
     Promise.all([
-      fetchCsv(dataUrl).catch(() => []),
-      fetchCsv(favoritesUrl).catch(() => []),
-      fetchCsv(sellsUrl).catch(() => [])
+      fetchCsv(dataUrl).catch(err => {
+        console.error("Main data fetch failed:", err);
+        return [];
+      }),
+      fetchCsv(favoritesUrl).catch(err => {
+        console.error("Favorites data fetch failed:", err);
+        return [];
+      }),
+      fetchCsv(sellsUrl).catch(err => {
+        console.error("Sells data fetch failed:", err);
+        return [];
+      })
     ])
       .then(([mainData, favData, sellData]) => {
+        console.log(`Data loaded: main=${mainData.length}, fav=${favData.length}, sell=${sellData.length}`);
         setData(mainData);
         setFavoritesData(favData);
         setSellsData(sellData);
@@ -218,11 +228,12 @@ function App() {
       if (mi < 0 || isNaN(yr)) return null;
       return { mi, yr, rawMonth: parts[0][0].toUpperCase() + parts[0].slice(1).toLowerCase(), rawYear: parts[1] };
     };
-    const vals = (data || []).map(r => parse(r.month)).filter(Boolean);
+    const allRows = [...(data || []), ...(favoritesData || []), ...(sellsData || [])];
+    const vals = allRows.map(r => parse(r.month)).filter(Boolean);
     if (vals.length === 0) return "";
     const best = vals.reduce((a, b) => (b.yr > a.yr || (b.yr === a.yr && b.mi > a.mi) ? b : a));
     return `${best.rawMonth} ${best.rawYear}`;
-  }, [data]);
+  }, [data, favoritesData, sellsData]);
 
   return (
     <Layout
